@@ -1,0 +1,70 @@
+switch (clkSource)
+                {
+                    case HSE_CLK:
+                        /*
+                        HSI -> HSE  
+                            a. Enable HSE
+                            b. Wait until HSE is ready
+                            c. Switch to HSE
+                            d. read switch status until confirmed 
+                            e. Disable HSI (optional)
+                        */
+                        RCC->CR_Bits.HSEON = 1; // Enable HSE
+                        while (RCC->CR_Bits.HSERDY == 0); // Wait until HSE is ready
+                        RCC->CFGR_Bits.SW = 0b01; // Switch to HSE
+                        while (RCC->CFGR_Bits.SWS != 0b01)  //01: HSE oscillator used as the system clock
+                        #ifdef RCC_DESABEL_AFTER_SWITCH
+                            RCC->CR_Bits.HSION = 0; // Disable HSI (optional)
+                        #endif
+                        break;
+                    case PLL_HSI_CLK:
+                        /*
+                        HSI -> PLL_HSI
+                            0. Configure PLL if not already configured
+                                -> HSI as PLL source
+                                    a. read HSIRDY to confirm HSI is still ready (optional)
+                            1. Enable PLL
+                            2. Wait until PLL is ready
+                            3. Switch to PLL
+                            4. read switch status until confirmed
+                        */
+                        printf("CAUTION: you MUST call the \"Rcc_PllConfig\" before selecting PLL_HSI_CLK or PLL_HSE_CLK\n");
+                        if (0b1u == RCC->CR_Bits.HSIRDY)
+                        {
+                            RCC->CR_Bits.PLLON= 0b1u;   //Enable PLL
+                            while(0b1u != RCC->CR_Bits.PLLRDY); //Wait until PLL is ready
+                            RCC->CFGR_Bits.SW = 0b10u;  //Switch to PLL
+                            while ( 0b10u != RCC->CFGR_Bits.SWS);   //read switch status until confirmed
+                        }
+                        else 
+                        {
+                            //retern error state
+                            printf("conflict in setting PLL, readings don't match");
+                        }
+                        break;
+                    case PLL_HSE_CLK:
+                        /*
+                        HSI -> PLL_HSE
+                            0. Configure PLL if not already configured
+                                -> HSE as PLL source
+                                    a. Enable HSE
+                                    b. Wait until HSE is ready
+                            1. Enable PLL
+                            2. Wait until PLL is ready
+                            3. Switch to PLL
+                            4. read switch status until confirmed
+                            5. Disable previous clock source (optional)
+                        */
+                        printf("CAUTION: you MUST call the \"Rcc_PllConfig\" before selecting PLL_HSI_CLK or PLL_HSE_CLK\n");
+                        RCC->CR_Bits.HSEON = 0b1u;  //Enable HSE
+                        while (0b1u != RCC->CR_Bits.HSERDY);    //Wait until HSE is ready
+                        RCC->CR_Bits.PLLON= 0b1u;   //Enable PLL
+                        while(0b1u != RCC->CR_Bits.PLLRDY); //Wait until PLL is ready 
+                        RCC->CFGR_Bits.SW = 0b10u;  //Switch to PLL
+                        while ( 0b10u != RCC->CFGR_Bits.SWS);   //read switch status until confirmed                       
+                        break;
+                    default:
+                        // Handle invalid clock source
+                        break;
+
+                }

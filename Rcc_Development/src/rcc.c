@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include "rcc/rcc.h"
@@ -86,7 +87,7 @@ typedef struct
     volatile uint32_t HSERDYC :1 ;   // HSE ready interrupt clear
     volatile uint32_t PLLRDYC :1 ;   // PLL ready interrupt clear
     volatile uint32_t PLLI2SRDYC :1 ;// PLLI2S ready interrupt clear
-    uint32_t RESERVED1 :2 ;          // Reserved bits
+    uint32_t RESERVED2 :2 ;          // Reserved bits
     volatile uint32_t CSSC :1 ;      // Clock security system interrupt clear
 } RCC_CIR_Bits_t;   //checked 4
 
@@ -99,9 +100,9 @@ typedef struct
     volatile uint32_t GPIOERST :1 ; // GPIOE reset
     uint32_t RESERVED0 :2 ;         // Reserved bits
     volatile uint32_t GPIOHRST :1 ; // GPIOH reset
-    uint32_t RESERVED0 :4 ;          // Reserved bits
+    uint32_t RESERVED1 :4 ;          // Reserved bits
     volatile uint32_t CRCRST :1 ;   // CRC reset
-    uint32_t RESERVED1 :8 ;          // Reserved bits
+    uint32_t RESERVED2 :8 ;          // Reserved bits
     volatile uint32_t DMA1RST :1 ;  // DMA1 reset
     volatile uint32_t DMA2RST :1 ;  // DMA2 reset
 } RCC_AHB1RSTR_Bits_t;  //checked 5
@@ -420,26 +421,7 @@ void Rcc_getSystemClk(Rcc_clkSource_t* clkSource)
             *clkSource = HSE_CLK;
             break;
         case 0b10:
-            switch (RCC->PLLCFGR_Bites.PLLSRC)
-            {
-                /*
-                    Bit 22 PLLSRC: Main PLL(PLL) and audio PLL (PLLI2S) entry clock source
-                        Set and cleared by software to select PLL and PLLI2S clock source. This bit can be written
-                        only when PLL and PLLI2S are disabled.
-                            0: HSI clock selected as PLL and PLLI2S clock entry
-                            1: HSE oscillator clock selected as PLL and PLLI2S clock entry
-                */
-                case 0b0:
-                    *clkSource = PLL_HSI_CLK;
-                    break;
-                case 0b1:
-                    *clkSource = PLL_HSE_CLK;
-                    break;
-                default:
-                    // Handle invalid PLL source
-                    *clkSource = INVALID_CLK;
-                    break;
-            }
+            *clkSource = PLL_CLK;
             break;
         default:
             // Handle invalid clock source
@@ -547,7 +529,7 @@ case of failure of the HSE oscillator used directly or indirectly as the system 
                     b. read switch status until confirmed
                     c. Disable PLL
 */
-void Rcc_setSystemClk(Rcc_clkSource_t clkSource);      //Not finnidshed yet
+void Rcc_setSystemClk(Rcc_clkSource_t clkSource)       //Not finnidshed yet
 {
     Rcc_clkSource_t currentClkSource;
     // Get the current system clock source
@@ -601,7 +583,7 @@ void Rcc_setSystemClk(Rcc_clkSource_t clkSource);      //Not finnidshed yet
                 RCC->CR_Bits.HSEON = 1; // Enable HSE
                 while (RCC->CR_Bits.HSERDY == 0); // Wait until HSE is ready
                 RCC->CFGR_Bits.SW = 0b01; // Switch to HSE (01: HSE oscillator used as the system clock)
-                while (RCC->CFGR_Bits.SWS != 0b01)  //read switch status until confirmed  
+                while (RCC->CFGR_Bits.SWS != 0b01);  //read switch status until confirmed  
                 if (currentClkSource == PLL_CLK)
                 {
                     /*      Disable PLL     */
@@ -645,7 +627,7 @@ void Rcc_setSystemClk(Rcc_clkSource_t clkSource);      //Not finnidshed yet
                 break;
             default:
                 // Handle invalid current clock source
-                printf("INVALID clock sourse, enter on of these (HSI_CLK, HSE_CLK, PLL_CLK)")
+                printf("INVALID clock sourse, enter on of these (HSI_CLK, HSE_CLK, PLL_CLK)");
                 break;
         }
         // Wait until the switch is complete
@@ -676,8 +658,22 @@ void Rcc_PllConfig(pllCongfig_t* pllConfig)
 
         HSE -> PLL
     */
-   if (HSI_CLK == pllConfig.pllSource)
+   if (HSI_CLK == pllConfig->pllSource)
    {
     
    }
 }
+
+
+// void Rcc_enablePeripheralClk(uint32_t peripheral)
+// {
+//     switch (peripheral)
+//     {
+//         case GPIOA:
+
+//             break;
+//         default:
+//             //handle wrong peripheral
+//             break;
+//     }
+// }
