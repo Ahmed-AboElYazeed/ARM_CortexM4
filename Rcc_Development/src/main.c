@@ -1,13 +1,16 @@
 
 #include <stdio.h>
+#include <stdint.h>
 #include <rcc/rcc.h>
 
 int main (void)
 {
     volatile int x=10;
-    //Rcc_clkSource_t sysClkSource= HSI_CLK;
-    //Rcc_setSystemClk(sysClkSource);
-    //Rcc_getSystemClk(&sysClkSource);
+    // Rcc_clkSource_t sysClkSource= HSE_CLK;
+    // Rcc_setSystemClk(sysClkSource);
+    // Rcc_getSystemClk(&sysClkSource);
+    uint64_t peripheral= GPIOA;
+    Rcc_enablePeripheralClk(peripheral);
     while (1)
     {
         printf("%d/n", x);

@@ -6,6 +6,9 @@
 #define RCC_BASE_ADDR  0x40023800UL
 #define RCC ((RCC_Registers_t*) RCC_BASE_ADDR)  // Macro to access RCC registers    // base add casted to a pointer to RCC_Registers_t structure
 
+// for verifing the intered PERIPHERAL values is one of the desited enum values
+//#define PERIPHERAL_VERIFYMASK 0xFFFFFFF000000000
+
 typedef struct 
 {
     volatile uint32_t HSION :1 ;    // Internal High-Speed clock enable
@@ -52,17 +55,7 @@ typedef struct
     volatile uint32_t MCO2 :2 ;    // Microcontroller clock output 2    //?
 } RCC_CFGR_Bits_t;   //checked 3
 
-/*
-//?
-                            typedef struct
-                            {
-                                volatile uint32_t PLLM  :6 ;     // Division factor for the main PLL and audio PLL input clock
-                                volatile uint32_t PLLN  :9 ;     // Main PLL multiplication factor for VCO
-                                volatile uint32_t PLLP  :2 ;     // Main PLL division factor for main system clock
-                                volatile uint32_t PLLQ  :4 ;     // Main PLL division factor for USB OTG FS, SDIO and RNG clocks
-                                uint32_t RESERVED :11 ;          // Reserved bits
-                            } PLL_ConfigBits_t;
-*/
+
 
 typedef struct 
 {
@@ -338,56 +331,98 @@ typedef struct
 
 typedef struct
 {
-    volatile uint32_t CR;
-    RCC_CR_Bits_t CR_Bits;
-    volatile uint32_t PLLCFGR;
-    RCC_PLLCFGR_Bits_t PLLCFGR_Bits;
-    volatile uint32_t CFGR;
-    RCC_CFGR_Bits_t CFGR_Bits;
-    volatile uint32_t CIR;
-    RCC_CIR_Bits_t CIR_Bits;
-    volatile uint32_t AHB1RSTR;
-    RCC_AHB1RSTR_Bits_t AHB1RSTR_Bits;
-    volatile uint32_t AHB2RSTR;
-    RCC_AHB2RSTR_Bits_t AHB2RSTR_Bits;
+    union{
+        volatile uint32_t CR;
+        RCC_CR_Bits_t CR_Bits;
+    };
+    union{
+        volatile uint32_t PLLCFGR;
+        RCC_PLLCFGR_Bits_t PLLCFGR_Bits;
+    };
+    union{
+        volatile uint32_t CFGR;
+        RCC_CFGR_Bits_t CFGR_Bits;
+    };
+    union{
+        volatile uint32_t CIR;
+        RCC_CIR_Bits_t CIR_Bits;
+    };
+    union{
+        volatile uint32_t AHB1RSTR;
+        RCC_AHB1RSTR_Bits_t AHB1RSTR_Bits;
+    };
+    union{
+        volatile uint32_t AHB2RSTR;
+        RCC_AHB2RSTR_Bits_t AHB2RSTR_Bits;        
+    };
     uint32_t RESERVED0[2];
-    volatile uint32_t APB1RSTR;
-    RCC_APB1RSTR_Bits_t APB1RSTR_Bits;
-    volatile uint32_t APB2RSTR;
-    RCC_APB2RSTR_Bits_t APB2RSTR_Bits;
+    union{
+        volatile uint32_t APB1RSTR;
+        RCC_APB1RSTR_Bits_t APB1RSTR_Bits;        
+    };
+    union{
+        volatile uint32_t APB2RSTR;
+        RCC_APB2RSTR_Bits_t APB2RSTR_Bits;        
+    };
     uint32_t RESERVED1[2];
-    volatile uint32_t AHB1ENR;
-    RCC_AHB1ENR_Bits_t AHB1ENR_Bits;
-    volatile uint32_t AHB2ENR;
-    RCC_AHB2ENR_Bits_t AHB2ENR_Bits;
+    union{
+        volatile uint32_t AHB1ENR;
+        RCC_AHB1ENR_Bits_t AHB1ENR_Bits;        
+    };
+    union{
+        volatile uint32_t AHB2ENR;
+        RCC_AHB2ENR_Bits_t AHB2ENR_Bits;        
+    };
     uint32_t RESERVED2;
-    volatile uint32_t APB1ENR;
-    RCC_APB1ENR_Bits_t APB1ENR_Bits;
-    volatile uint32_t APB2ENR;
-    RCC_APB2ENR_Bits_t APB2ENR_Bits;
+    union{
+        volatile uint32_t APB1ENR;
+        RCC_APB1ENR_Bits_t APB1ENR_Bits;        
+    };
+    union{
+        volatile uint32_t APB2ENR;
+        RCC_APB2ENR_Bits_t APB2ENR_Bits;        
+    };
     uint32_t RESERVED3[2];
-    volatile uint32_t AHB1LPENR;
-    RCC_AHB1LPENR_Bits_t AHB1LPENR_Bits;
-    volatile uint32_t AHB2LPENR;
-    RCC_AHB2LPENR_Bits_t AHB2LPENR_Bits;
+    union{
+        volatile uint32_t AHB1LPENR;
+        RCC_AHB1LPENR_Bits_t AHB1LPENR_Bits;
+    };
+    union{
+        volatile uint32_t AHB2LPENR;
+        RCC_AHB2LPENR_Bits_t AHB2LPENR_Bits;        
+    };
     uint32_t RESERVED4;
-    volatile uint32_t APB1LPENR;
-    RCC_APB1LPENR_Bits_t APB1LPENR_Bits;
-    volatile uint32_t APB2LPENR;
-    RCC_APB2LPENR_Bits_t APB2LPENR_Bits;
+    union{
+        volatile uint32_t APB1LPENR;
+        RCC_APB1LPENR_Bits_t APB1LPENR_Bits;
+    };
+    union{
+        volatile uint32_t APB2LPENR;
+        RCC_APB2LPENR_Bits_t APB2LPENR_Bits;        
+    };
     uint32_t RESERVED5[2];
-    volatile uint32_t BDCR;
-    RCC_BDCR_Bits_t BDCR_Bits;
-    volatile uint32_t CSR;
-    RCC_CSR_Bits_t CSR_Bits;
+    union{
+        volatile uint32_t BDCR;
+        RCC_BDCR_Bits_t BDCR_Bits;        
+    };
+    union{
+        volatile uint32_t CSR;
+        RCC_CSR_Bits_t CSR_Bits;        
+    };
     uint32_t RESERVED6[2];
-    volatile uint32_t SSCGR;
-    RCC_SSCGR_Bits_t SSCGR_Bits;
-    volatile uint32_t PLLI2SCFGR;
-    RCC_PLLI2SCFGR_Bits_t PLLI2SCFGR_Bits;
+    union{
+        volatile uint32_t SSCGR;
+        RCC_SSCGR_Bits_t SSCGR_Bits;        
+    };
+    union{
+        volatile uint32_t PLLI2SCFGR;
+        RCC_PLLI2SCFGR_Bits_t PLLI2SCFGR_Bits;        
+    };
     uint32_t RESERVED7;
-    volatile uint32_t DCKCFGR;
-    RCC_DCKCFGR_Bits_t DCKCFGR_Bits;
+    union{
+        volatile uint32_t DCKCFGR;
+        RCC_DCKCFGR_Bits_t DCKCFGR_Bits;
+    };
 } RCC_Registers_t;
 
 
@@ -401,6 +436,41 @@ typedef struct
         RCC->CR_Bits.HSITRIM = 16;      // Decimal
         RCC->CR_Bits.HSITRIM = 0b10000; // Binary
 */
+
+
+void Rcc_init(void)
+{
+        /*
+        typedef struct
+        {
+            uint32_t pllSource;
+            uint32_t pllM;
+            uint32_t pllN;
+            uint32_t pllP;
+            uint32_t pllQ;
+        }pllCongfig_t;
+        */
+        //FOR VONFIGURING PLL
+        // pllCongfig_t pllConfig;
+        // pllConfig->pllM =// VALUE ;
+        // pllConfig->pllN =// VALUE ;
+        // pllConfig->pllP =// VALUE ;
+        // pllConfig->pllQ =// VALUE */;
+        // Rcc_PllConfig(&pllConfig);
+
+    /*
+    typedef enum
+    {
+        HSI_CLK = 0,
+        HSE_CLK = 1,
+        PLL_CLK = 2,
+        INVALID_CLK = 0xFFFFFFFF
+    }Rcc_clkSource_t;
+    */
+    Rcc_setSystemClk(HSI_CLK);
+
+    //Rcc_disableUnusedSystemClk()
+}
 
 /* RCC clock configuration register (RCC_CFGR)
     Bits 3:2 SWS: System clock switch status
@@ -440,7 +510,6 @@ case of failure of the HSE oscillator used directly or indirectly as the system 
     10: PLL selected as system clock
     11: not allowed
 */
-
 /*
     1. read current system clock source 
     2. if different from desired source, switch to desired source "ELSE Jump to END"
@@ -537,6 +606,8 @@ void Rcc_setSystemClk(Rcc_clkSource_t clkSource)       //Not finnidshed yet
 
     if (currentClkSource != clkSource)
     {
+        //initializing time out
+        uint8_t timeOut = 50;
         switch (clkSource)
         {
             case HSI_CLK:
@@ -548,13 +619,14 @@ void Rcc_setSystemClk(Rcc_clkSource_t clkSource)       //Not finnidshed yet
                     d. read switch status until confirmed 
                     e. Disable HSE 
                 */
-                RCC->CR_Bits.HSION = 1; // Enable HSE
-                while (RCC->CR_Bits.HSIRDY == 0); // Wait until HSI is ready
+                RCC->CR_Bits.HSION = 1; // Enable HSI
+                while (RCC->CR_Bits.HSIRDY == 0b1u && timeOut--); // Wait until HSI is ready
                 RCC->CFGR_Bits.SW = 0b00; // Switch to HSI  (00: HSI oscillator selected as system clock)
-                while (RCC->CFGR_Bits.SWS != 0b00)  //read switch status until confirmed 
+                timeOut = 50;   //reset time out
+                while (RCC->CFGR_Bits.SWS != 0b00  && timeOut--);  //read switch status until confirmed 
                 if (currentClkSource == HSE_CLK)
                 {
-                    /*      Disable HSE */
+                    /* Disable HSE */
                     RCC->CR_Bits.HSEON = 0b0u;  //0: HSE oscillator OFF
                 }
                 else
@@ -581,9 +653,11 @@ void Rcc_setSystemClk(Rcc_clkSource_t clkSource)       //Not finnidshed yet
                     e. Disable HSI (optional)
                 */
                 RCC->CR_Bits.HSEON = 1; // Enable HSE
-                while (RCC->CR_Bits.HSERDY == 0); // Wait until HSE is ready
+                timeOut = 50;   //reset time out
+                while (RCC->CR_Bits.HSERDY == 0 && timeOut--); // Wait until HSE is ready
                 RCC->CFGR_Bits.SW = 0b01; // Switch to HSE (01: HSE oscillator used as the system clock)
-                while (RCC->CFGR_Bits.SWS != 0b01);  //read switch status until confirmed  
+                timeOut = 50;   //reset time out
+                while (RCC->CFGR_Bits.SWS != 0b01 && timeOut--);  //read switch status until confirmed  
                 if (currentClkSource == PLL_CLK)
                 {
                     /*      Disable PLL     */
@@ -593,7 +667,7 @@ void Rcc_setSystemClk(Rcc_clkSource_t clkSource)       //Not finnidshed yet
                 {
                     /* nothing */
                 }
-                #ifdef RCC_DESABEL_AFTER_SWITCH
+                #ifdef RCC_HSI_UNUSED_DESABEL
                     RCC->CR_Bits.HSION = 0; // Disable HSI (optional)
                 #endif
                 break;
@@ -609,21 +683,17 @@ void Rcc_setSystemClk(Rcc_clkSource_t clkSource)       //Not finnidshed yet
                 */
                 printf("CAUTION: you MUST call the \"Rcc_PllConfig\" before selecting PLL_CLK.  \n");
                 RCC->CR_Bits.PLLON= 0b1u;   //Enable PLL
-                while(0b1u != RCC->CR_Bits.PLLRDY); //Wait until PLL is ready 
+                // these two lines tell the flash to that the clock speed will increase by a large amount.
+                /* When you perform this step before switching to PLL, the Flash interface has enough wait cycles to handle the faster clock.
+                 Thus, the system can safely switch to the PLL as the system clock source, and the loop waiting for it to stabilize completes successfully.
+                 */
+                *(uint32_t*)((0x40000000UL + 0x00020000UL) + 0x3C00UL) &= ~0b111;
+                *(uint32_t*)((0x40000000UL + 0x00020000UL) + 0x3C00UL) |= (2 & 0b111);
+                timeOut = 50;   //reset time out
+                while(0b1u != RCC->CR_Bits.PLLRDY && timeOut--); //Wait until PLL is ready 
                 RCC->CFGR_Bits.SW = 0b10u;  //Switch to PLL (10: PLL selected as system clock)
-                while ( 0b10u != RCC->CFGR_Bits.SWS);   //read switch status until confirmed
-                if (currentClkSource == HSE_CLK)
-                {
-                    /*      Disable HSE */
-                    RCC->CR_Bits.HSEON = 0b0u;  //0: HSE oscillator OFF
-                }
-                else
-                {
-                    /* nothing */
-                }
-                #ifdef RCC_DESABEL_AFTER_SWITCH
-                    RCC->CR_Bits.HSION = 0; // Disable HSI (optional) 0: HSI oscillator OFF
-                #endif
+                timeOut = 50;   //reset time out
+                while ( 0b10u != RCC->CFGR_Bits.SWS && timeOut--);   //read switch status until confirmed
                 break;
             default:
                 // Handle invalid current clock source
@@ -648,32 +718,122 @@ typedef struct
 */
 void Rcc_PllConfig(pllCongfig_t* pllConfig)
 {
+    uint8_t timeOut = 50;
     Rcc_clkSource_t currentClkSource;
     // Get the current system clock source
     Rcc_getSystemClk(&currentClkSource);
-
-    /*
-        OFF
-        HSI -> PLL
-
-        HSE -> PLL
-    */
-   if (HSI_CLK == pllConfig->pllSource)
+   if (HSI_CLK != currentClkSource)
    {
-    
+        RCC->CR_Bits.HSION = 1; // Enable HSE
+        timeOut = 50;   //reset time out
+        while (RCC->CR_Bits.HSIRDY == 0 && timeOut--); // Wait until HSI is ready
+   }
+   //SWITCH to HSI
+    RCC->CFGR_Bits.SW = 0b00; // Switch to HSI  (00: HSI oscillator selected as system clock)
+    timeOut = 50;   //reset time out
+    while (RCC->CFGR_Bits.SWS != 0b00 && timeOut--);  //read switch status until confirmed 
+    //set user PLL configerations 
+    RCC->PLLCFGR_Bits.PLLM = pllConfig->pllM;
+    RCC->PLLCFGR_Bits.PLLN = pllConfig->pllN;
+    RCC->PLLCFGR_Bits.PLLP = pllConfig->pllP;
+    RCC->PLLCFGR_Bits.PLLQ = pllConfig->pllQ;
+    // set the desired pll clock source
+    //this next switch change the PLLSOURC Bit, *** his bit can be written only when PLL and PLLI2S are disabled ***
+    if (RCC->CR_Bits.PLLRDY == 0b0u)
+    {
+        switch (pllConfig->pllSource)
+        {
+        case HSI_CLK:   // PLL_HSI
+            /* PLL_HSI (0: HSI clock selected as PLL and PLLI2S clock entry) */
+            RCC->PLLCFGR_Bits.PLLSRC = 0b0u;              
+            break;
+        case HSE_CLK:
+            // enable the PLL SOURCE            
+            RCC->CR_Bits.HSEON = 1; // Enable HSE
+            timeOut = 50;   //reset time out
+            while (RCC->CR_Bits.HSERDY == 0 && timeOut--); // Wait until HSE is ready
+            /* PLL_HSE (1: HSE oscillator clock selected as PLL and PLLI2S clock entry) */
+            RCC->PLLCFGR_Bits.PLLSRC = 0b1u;
+            break;
+        default:
+        // handel wrong pllSource inputs
+            break;
+        }
    }
 }
 
+void Rcc_getPllConfig(pllCongfig_t *pllConfig)
+{
+    //read user PLL configerations 
+    pllConfig->pllSource = RCC->PLLCFGR_Bits.PLLSRC;
+    pllConfig->pllM = RCC->PLLCFGR_Bits.PLLM;
+    pllConfig->pllN = RCC->PLLCFGR_Bits.PLLN;
+    pllConfig->pllP = RCC->PLLCFGR_Bits.PLLP;
+    pllConfig->pllQ = RCC->PLLCFGR_Bits.PLLQ;
+}
 
-// void Rcc_enablePeripheralClk(uint32_t peripheral)
-// {
-//     switch (peripheral)
-//     {
-//         case GPIOA:
+void Rcc_disableUnusedSystemClk()
+{
+    Rcc_clkSource_t localActual_clkSource;
+    pllCongfig_t *pllConfig;
+    // Get the current system clock source
+    Rcc_getSystemClk(&localActual_clkSource);
+    Rcc_getPllConfig(pllConfig);
+    switch (localActual_clkSource)
+    {
+    case HSI_CLK:
+        /* Disable HSE */
+        RCC->CR_Bits.HSEON = 0b0u;  //0: HSE oscillator OFF
+        /* Disable PLL */
+        RCC->CR_Bits.PLLON = 0b0u;  //0: PLL oscillator OFF
+        break;
+    case HSE_CLK:
+        /* Disable HSI */
+        #ifdef RCC_HSI_UNUSED_DESABEL
+            RCC->CR_Bits.HSION = 0; // Disable HSI (optional) 0: HSI oscillator OFF
+        #endif
+        /* Disable PLL */
+        RCC->CR_Bits.PLLON = 0b0u;  //0: PLL oscillator OFF
+        break;
+    case PLL_CLK:
+        switch (pllConfig->pllSource)
+        {
+        case HSI_CLK:
+            /* Disable HSE */
+            RCC->CR_Bits.HSEON = 0b0u;  //0: HSE oscillator OFF
+            break;
+        case HSE_CLK:
+            /* Disable HSI */
+            #ifdef RCC_HSI_UNUSED_DESABEL
+                RCC->CR_Bits.HSION = 0; // Disable HSI (optional) 0: HSI oscillator OFF
+            #endif
+            break;
 
-//             break;
-//         default:
-//             //handle wrong peripheral
-//             break;
-//     }
-// }
+        default:
+            break;
+        }
+        break;
+    
+    default:
+        break;
+    }
+}
+
+void Rcc_enablePeripheralClk(uint64_t peripheral)   //or should it be  (Rcc_peripheral_t peripheral) ???
+{
+    switch (peripheral >> 32)
+    {
+        case 0b0001:
+            RCC->AHB1ENR |= (uint32_t) peripheral;
+            break;
+        case 0b0010:
+            RCC->AHB2ENR |= (uint32_t) peripheral;
+            break;
+        case 0b0100:
+            RCC->APB1ENR |= (uint32_t) peripheral;
+            break;
+        case 0b1000:
+            RCC->APB2ENR |= (uint32_t) peripheral;
+            break;
+    }
+}
