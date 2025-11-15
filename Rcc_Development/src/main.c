@@ -2,22 +2,29 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <rcc/rcc.h>
+#include <GPIO/GPIO.h>
+#include <led/led_cfg.h>
 
 int main (void)
 {
-    volatile int x=10;
-    // Rcc_clkSource_t sysClkSource= HSE_CLK;
-    // Rcc_setSystemClk(sysClkSource);
-    // Rcc_getSystemClk(&sysClkSource);
-    uint64_t peripheral= GPIOA;
-    Rcc_enablePeripheralClk(peripheral);
+
+// IN PIN CONFIGURATION EXAMPLE
+    void * port= GPIOC;
+    uint32_t pin= 14;
+    uint8_t value; //HIGH
+    GPIO_pinCfg_t sensorPin;
+    Rcc_enablePeripheralClk(Rcc_GPIOC);
+    
+
+
     while (1)
     {
-        printf("%d/n", x);
-        
+        GPIO_readPinVal(&sensorPin, &value);
     }
     return 0;
 }
+
+
 
 
 
@@ -56,3 +63,96 @@ int main (void)
     
 //    }
 // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*                  codes                   */
+
+
+
+
+
+/*              testing gpio driver
+
+int main (void)
+{
+// OUTPUT PIN CONFIGURATION EXAMPLE
+    void * port= GPIOC;
+    uint32_t pin= 13;
+    uint8_t value= 1; //HIGH
+    GPIO_pinCfg_t motorPin;
+    motorPin.mode=0;
+        Rcc_enablePeripheralClk(((uint64_t)0b0001 << 32)  |  (0b1 << 2)); //GPIOC
+    GPIO_identfyPin(&motorPin,port,pin); //GPIOA/B/C/D/E , pin number 0-15
+    GPIO_setPinDirMode(&motorPin,OUTPUT);  //input, output, alternate, analog
+    //GPIO_setOutPinMode(&motorPin,PUSH_PULL,PULL_UP);   //push-pull/open-drain , pull-up/pull-down
+    //GPIO_selectAlternateFunc(&motorPin, TIM1_TIM2); 
+
+    GPIO_creatPin(&motorPin);
+
+    while (1)
+    {
+        GPIO_setPinVal(&motorPin,0);
+        GPIO_readPinVal(&motorPin, &value);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        }  
+        GPIO_setPinVal(&motorPin,1);  
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        }    
+    }
+    return 0;
+}
+
+*/
+
+
+
+
+
+/*                  testing gpio read
+
+int main()
+{
+// IN PIN CONFIGURATION EXAMPLE
+    void * port= GPIOC;
+    uint32_t pin= 14;
+    uint8_t value; //HIGH
+    GPIO_pinCfg_t sensorPin;
+    Rcc_enablePeripheralClk(Rcc_GPIOC);
+    GPIO_identfyPin(&sensorPin,port,pin); //GPIOA/B/C/D/E , pin number 0-15
+    GPIO_setPinDirMode(&sensorPin,INPUT);  //input, output, alternate, analog
+    //GPIO_setOutPinMode(&sensorPin,PUSH_PULL,PULL_DOWN);   //push-pull/open-drain , pull-up/pull-down
+    //GPIO_selectAlternateFunc(&sensorPin, TIM1);
+    
+    GPIO_creatPin(&sensorPin);
+
+    
+        GPIO_readPinVal(&sensorPin, &value);
+        GPIO_readPinVal(&sensorPin, &value);
+        GPIO_readPinVal(&sensorPin, &value);
+        GPIO_readPinVal(&sensorPin, &value);
+
+
+    while (1)
+    {
+        GPIO_readPinVal(&sensorPin, &value);
+    }
+    return 0;
+}
+*/
