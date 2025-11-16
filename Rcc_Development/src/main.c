@@ -3,23 +3,31 @@
 #include <stdint.h>
 #include <rcc/rcc.h>
 #include <GPIO/GPIO.h>
-#include <led/led_cfg.h>
+#include <led/led.h>
 
 int main (void)
 {
-
-// IN PIN CONFIGURATION EXAMPLE
-    void * port= GPIOC;
-    uint32_t pin= 14;
-    uint8_t value; //HIGH
-    GPIO_pinCfg_t sensorPin;
     Rcc_enablePeripheralClk(Rcc_GPIOC);
-    
+    LED_init();
 
 
     while (1)
     {
-        GPIO_readPinVal(&sensorPin, &value);
+        LED_turnON(LED_WARNING);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
+        LED_turnOFF(LED_WARNING);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
+        LED_toggle(LED_GARAG);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
     }
     return 0;
 }
@@ -155,4 +163,40 @@ int main()
     }
     return 0;
 }
+*/
+
+
+
+
+
+
+/*                  testing led driver
+
+int main (void)
+{
+    Rcc_enablePeripheralClk(Rcc_GPIOC);
+    LED_init();
+
+
+    while (1)
+    {
+        LED_turnON(LED_WARNING);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
+        LED_turnOFF(LED_WARNING);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
+        LED_toggle(LED_GARAG);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
+    }
+    return 0;
+}
+
 */

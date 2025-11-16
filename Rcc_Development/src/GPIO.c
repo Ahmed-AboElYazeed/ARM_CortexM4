@@ -55,18 +55,18 @@ uint8_t GPIO_identfyPin(GPIO_pinCfg_t * pinConfig, void * port, uint32_t pin) //
 }
 uint8_t GPIO_setPinDirMode(GPIO_pinCfg_t * pinConfig, uint8_t dir)    //input, output, alternate, analog
 {
-    pinConfig->mode &= ~GPIO_OutTypeMSK; //clear the mode bits first
+    pinConfig->mode &= ~GPIO_ModeMSK; //clear the mode bits first
     pinConfig->mode |= (dir & GPIO_ModeMSK); //set the mode bits
     return 0;
 }
 uint8_t GPIO_setOutPinMode(GPIO_pinCfg_t * pinConfig, uint8_t outType, uint8_t pullType)  //push-pull/open-drain , pull-up/pull-down
 {
-    pinConfig->mode &= ~GPIO_ModeMSK; //clear the out type bits first
-    pinConfig->mode |= ((outType << OutTypeMSK_SHIFT) & GPIO_ModeMSK); //set the out type bits
+    pinConfig->mode &= ~GPIO_OutTypeMSK; //clear the out type bits first
+    pinConfig->mode |= ((outType << OutTypeMSK_SHIFT) & GPIO_OutTypeMSK); //set the out type bits
 
 
-    pinConfig->mode &= ~GPIO_ModeMSK; //clear the pull type bits first
-    pinConfig->mode |= ((pullType << PullMSK_SHIFT) & GPIO_ModeMSK); //set the pull type bits
+    pinConfig->mode &= ~GPIO_PullMSK; //clear the pull type bits first
+    pinConfig->mode |= ((pullType << PullMSK_SHIFT) & GPIO_PullMSK); //set the pull type bits
     return 0;
 }
 

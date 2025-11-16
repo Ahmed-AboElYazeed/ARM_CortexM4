@@ -7,15 +7,15 @@ const LED_cfg_t LED_cfg [LED_LEN]
     [LED_WARNING]=
     {
         .active_state = LED_activeLow,
-        .port = GPIOA,
-        .pin = 1,
-        .pullType = true,
+        .port = GPIOC,
+        .pin = 13,
+        .pullType = PULL_UP,
     },
-    [LED_ERROR]=
+    [LED_GARAG]=
     {
-        .active_state = LED_activeLow,
-        .port = GPIOA,
-        .pin = 2,
-        .pullType=true,
+        .active_state = LED_activeHigh,
+        .port = GPIOC,
+        .pin = 14,
+        .pullType= PULL_DOWN,
     }
 };

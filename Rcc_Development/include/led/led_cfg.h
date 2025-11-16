@@ -4,7 +4,7 @@
 
 typedef enum{
     LED_WARNING,
-    LED_ERROR,
+    LED_GARAG,
     LED_LEN //led number
 }LED_names_t;
 

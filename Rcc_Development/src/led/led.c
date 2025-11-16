@@ -11,8 +11,8 @@ void LED_init()
     {
         GPIO_identfyPin(&GPIO_LEDPin[i],LED_cfg[i].port,LED_cfg[i].pin); //GPIOA/B/C/D/E , pin number 0-15
         GPIO_setPinDirMode(&GPIO_LEDPin[i],OUTPUT);  //input, output, alternate, analog
-        GPIO_setOutPinMode(&GPIO_LEDPin[i],PUSH_PULL,PULL_UP);   //push-pull/open-drain , pull-up/pull-down
-        GPIO_selectAlternateFunc(&GPIO_LEDPin[i], DIO); 
+        GPIO_setOutPinMode(&GPIO_LEDPin[i],PUSH_PULL,LED_cfg[i].pullType);   //push-pull/open-drain , pull-up/pull-down
+        //GPIO_selectAlternateFunc(&GPIO_LEDPin[i], DIO); 
         GPIO_creatPin(&GPIO_LEDPin[i]);
     }
 
@@ -21,13 +21,37 @@ void LED_init()
 }
 uint8_t LED_turnON(LED_names_t LED_name)
 {
-    GPIO_setPinVal(&GPIO_LEDPin[LED_name], 1);
-    return 0;
+    if (LED_cfg[LED_name].active_state == LED_activeHigh)
+    {
+        GPIO_setPinVal(&GPIO_LEDPin[LED_name], HIGH);
+        return LED_ON;
+    }
+    else if (LED_cfg[LED_name].active_state == LED_activeLow)
+    {
+        GPIO_setPinVal(&GPIO_LEDPin[LED_name], LOW);
+        return LED_OFF;
+    }
+    else
+    {
+        return LED_ERR;
+    }
 }
 uint8_t LED_turnOFF(LED_names_t LED_name)
 {
-    GPIO_setPinVal(&GPIO_LEDPin[LED_name], 0);
-    return 0;
+    if (LED_cfg[LED_name].active_state == LED_activeHigh)
+    {
+        GPIO_setPinVal(&GPIO_LEDPin[LED_name], LOW);
+        return LED_ON;
+    }
+    else if (LED_cfg[LED_name].active_state == LED_activeLow)
+    {
+        GPIO_setPinVal(&GPIO_LEDPin[LED_name], HIGH);
+        return LED_OFF;
+    }
+    else
+    {
+        return LED_ERR;
+    }
 }
 uint8_t LED_toggle(LED_names_t LED_name)
 {

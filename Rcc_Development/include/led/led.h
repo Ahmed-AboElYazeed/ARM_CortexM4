@@ -7,6 +7,9 @@
 #define true  1
 #define false 0
 
+#define HIGH  1
+#define LOW   0
+
 typedef enum{
     LED_activeLow,
     LED_activeHigh
@@ -20,6 +23,13 @@ typedef struct
     uint8_t pin;
     uint8_t pullType;
 }LED_cfg_t;
+
+typedef enum
+{
+    LED_ON,
+    LED_OFF,
+    LED_ERR
+}LED_state_t;
 
 
 void LED_init(void);
