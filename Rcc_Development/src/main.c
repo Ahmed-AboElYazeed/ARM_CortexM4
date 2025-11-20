@@ -8,22 +8,24 @@
 
 int main (void)
 {
+    Rcc_init();
     Rcc_enablePeripheralClk(Rcc_GPIOC);
     SWITCH_init();
     LED_init();
     LED_turnOFF(LED_GARAG);
     while (1)
     {
-        while (SWITCH_readState(SWITCH_FIRST) == SWITCH_PRESSED_ON)
-        {
-            for (volatile int i=0; i<10000; i++);
-            LED_turnON(LED_GARAG);
-        }
-        if (SWITCH_readState(SWITCH_FIRST) == SWITCH_UNPRESSED_OFF)
-        {
-            LED_turnOFF(LED_GARAG);
-        }
-        
+        // if (SWITCH_readState(SWITCH_FIRST) == SWITCH_PRESSED_ON)
+        // {
+        //     for (volatile int i=0; i<10000; i++);
+        //     LED_turnON(LED_GARAG);
+        // }
+        // if (SWITCH_readState(SWITCH_FIRST) == SWITCH_UNPRESSED_OFF)
+        // {
+        //     LED_turnOFF(LED_GARAG);
+        // }
+        LED_toggle(LED_GARAG);
+        for (volatile int i=0; i<1000000; i++);
         
     }
     return 0;
@@ -229,5 +231,33 @@ int main (void)
     return 0;
 }
 
+
+*/
+
+
+/*              testing switch
+
+int main (void)
+{
+    Rcc_enablePeripheralClk(Rcc_GPIOC);
+    SWITCH_init();
+    LED_init();
+    LED_turnOFF(LED_GARAG);
+    while (1)
+    {
+        if (SWITCH_readState(SWITCH_FIRST) == SWITCH_PRESSED_ON)
+        {
+            for (volatile int i=0; i<10000; i++);
+            LED_turnON(LED_GARAG);
+        }
+        if (SWITCH_readState(SWITCH_FIRST) == SWITCH_UNPRESSED_OFF)
+        {
+            LED_turnOFF(LED_GARAG);
+        }
+        
+        
+    }
+    return 0;
+}
 
 */

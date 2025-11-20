@@ -55,8 +55,6 @@ typedef struct
     volatile uint32_t MCO2 :2 ;    // Microcontroller clock output 2    //?
 } RCC_CFGR_Bits_t;   //checked 3
 
-
-
 typedef struct 
 {
     volatile uint32_t LSIRDYF :1 ;   // LSI ready flag
@@ -328,7 +326,6 @@ typedef struct
 
 
 
-
 typedef struct
 {
     union{
@@ -440,36 +437,29 @@ typedef struct
 
 void Rcc_init(void)
 {
-        /*
-        typedef struct
-        {
-            uint32_t pllSource;
-            uint32_t pllM;
-            uint32_t pllN;
-            uint32_t pllP;
-            uint32_t pllQ;
-        }pllCongfig_t;
-        */
+    //calling linking method "for now"
+        
         //FOR VONFIGURING PLL
-        // pllCongfig_t pllConfig;
-        // pllConfig->pllM =// VALUE ;
-        // pllConfig->pllN =// VALUE ;
-        // pllConfig->pllP =// VALUE ;
-        // pllConfig->pllQ =// VALUE */;
-        // Rcc_PllConfig(&pllConfig);
-
-    /*
-    typedef enum
-    {
-        HSI_CLK = 0,
-        HSE_CLK = 1,
-        PLL_CLK = 2,
-        INVALID_CLK = 0xFFFFFFFF
-    }Rcc_clkSource_t;
-    */
-    Rcc_setSystemClk(HSI_CLK);
+        Rcc_cfg_t Rcc_cfg;
+        Rcc_cfg.systemClkSource = PLL_CLK;
+        Rcc_cfg.pllCfg.pllSource = HSI_CLK;
+        Rcc_cfg.pllCfg.pllM = 8 ;
+        Rcc_cfg.pllCfg.pllN = 168 ;
+        Rcc_cfg.pllCfg.pllP = 4 ;
+        Rcc_cfg.pllCfg.pllQ = 7 ;
+    
+    Rcc_setConfig(&Rcc_cfg);
+    // Rcc_PllConfig(&Rcc_cfg.pllCfg);
+    // Rcc_setSystemClk(Rcc_cfg.systemClkSource);
 
     //Rcc_disableUnusedSystemClk()
+}
+
+void Rcc_setConfig(Rcc_cfg_t* Rcc_cfg)
+{
+    Rcc_PllConfig(&(Rcc_cfg->pllCfg));
+
+    Rcc_setSystemClk(Rcc_cfg->systemClkSource);
 }
 
 /* RCC clock configuration register (RCC_CFGR)
@@ -598,7 +588,7 @@ case of failure of the HSE oscillator used directly or indirectly as the system 
                     b. read switch status until confirmed
                     c. Disable PLL
 */
-void Rcc_setSystemClk(Rcc_clkSource_t clkSource)       //Not finnidshed yet
+void Rcc_setSystemClk(Rcc_clkSource_t clkSource)
 {
     Rcc_clkSource_t currentClkSource;
     // Get the current system clock source
@@ -606,94 +596,37 @@ void Rcc_setSystemClk(Rcc_clkSource_t clkSource)       //Not finnidshed yet
 
     if (currentClkSource != clkSource)
     {
-        //initializing time out
-        uint8_t timeOut = 50;
         switch (clkSource)
         {
             case HSI_CLK:
-                /*
-                -> HSI 
-                    a. Enable HSI
-                    b. Wait until HSI is ready
-                    c. Switch to HSI
-                    d. read switch status until confirmed 
-                    e. Disable HSE 
-                */
-                RCC->CR_Bits.HSION = 1; // Enable HSI
-                while (RCC->CR_Bits.HSIRDY == 0b1u && timeOut--); // Wait until HSI is ready
-                RCC->CFGR_Bits.SW = 0b00; // Switch to HSI  (00: HSI oscillator selected as system clock)
-                timeOut = 50;   //reset time out
-                while (RCC->CFGR_Bits.SWS != 0b00  && timeOut--);  //read switch status until confirmed 
-                if (currentClkSource == HSE_CLK)
-                {
-                    /* Disable HSE */
-                    RCC->CR_Bits.HSEON = 0b0u;  //0: HSE oscillator OFF
-                }
-                else
-                {
-                    /* nothing */
-                }
-                if (currentClkSource == PLL_CLK)
-                {
-                    /*      Disable PLL     */
-                    RCC->CR_Bits.PLLON = 0b0u; //0: PLL OFF    //1: PLL ON
-                }
-                else
-                {
-                    /* nothing */
-                }
+                Rcc_setSystemClk_HSI(clkSource);
+                    if (currentClkSource == HSE_CLK)
+                    {
+                        /* Disable HSE */
+                        RCC->CR_Bits.HSEON = 0b0u;  //0: HSE oscillator OFF
+                    }
+                    else { /* nothing */ }
+                    if (currentClkSource == PLL_CLK)
+                    {
+                        /*      Disable PLL     */
+                        RCC->CR_Bits.PLLON = 0b0u; //0: PLL OFF    //1: PLL ON
+                    }
+                    else { /* nothing */ }
                 break;
             case HSE_CLK:
-                /*
-                -> HSE  
-                    a. Enable HSE
-                    b. Wait until HSE is ready
-                    c. Switch to HSE
-                    d. read switch status until confirmed 
-                    e. Disable HSI (optional)
-                */
-                RCC->CR_Bits.HSEON = 1; // Enable HSE
-                timeOut = 50;   //reset time out
-                while (RCC->CR_Bits.HSERDY == 0 && timeOut--); // Wait until HSE is ready
-                RCC->CFGR_Bits.SW = 0b01; // Switch to HSE (01: HSE oscillator used as the system clock)
-                timeOut = 50;   //reset time out
-                while (RCC->CFGR_Bits.SWS != 0b01 && timeOut--);  //read switch status until confirmed  
+                Rcc_setSystemClk_HSE(clkSource);
                 if (currentClkSource == PLL_CLK)
                 {
                     /*      Disable PLL     */
                     RCC->CR_Bits.PLLON = 0b0u; //0: PLL OFF    //1: PLL ON
                 }
-                else
-                {
-                    /* nothing */
-                }
+                else { /* nothing */ }
                 #ifdef RCC_HSI_UNUSED_DESABEL
                     RCC->CR_Bits.HSION = 0; // Disable HSI (optional)
                 #endif
                 break;
             case PLL_CLK:
-                /*
-                -> PLL
-                    0. Configure PLL if not already configured
-                    1. Enable PLL
-                    2. Wait until PLL is ready
-                    3. Switch to PLL
-                    4. read switch status until confirmed
-                    5. Disable previous clock source (optional)
-                */
-                printf("CAUTION: you MUST call the \"Rcc_PllConfig\" before selecting PLL_CLK.  \n");
-                RCC->CR_Bits.PLLON= 0b1u;   //Enable PLL
-                // these two lines tell the flash to that the clock speed will increase by a large amount.
-                /* When you perform this step before switching to PLL, the Flash interface has enough wait cycles to handle the faster clock.
-                 Thus, the system can safely switch to the PLL as the system clock source, and the loop waiting for it to stabilize completes successfully.
-                 */
-                *(uint32_t*)((0x40000000UL + 0x00020000UL) + 0x3C00UL) &= ~0b111;
-                *(uint32_t*)((0x40000000UL + 0x00020000UL) + 0x3C00UL) |= (2 & 0b111);
-                timeOut = 50;   //reset time out
-                while(0b1u != RCC->CR_Bits.PLLRDY && timeOut--); //Wait until PLL is ready 
-                RCC->CFGR_Bits.SW = 0b10u;  //Switch to PLL (10: PLL selected as system clock)
-                timeOut = 50;   //reset time out
-                while ( 0b10u != RCC->CFGR_Bits.SWS && timeOut--);   //read switch status until confirmed
+                Rcc_setSystemClk_PLL(clkSource);
                 break;
             default:
                 // Handle invalid current clock source
@@ -704,6 +637,71 @@ void Rcc_setSystemClk(Rcc_clkSource_t clkSource)       //Not finnidshed yet
         //while (RCC->CFGR_Bits.SWS != RCC->CFGR_Bits.SW);
     }
 
+}
+
+void Rcc_setSystemClk_HSI(Rcc_clkSource_t clkSource)
+{
+    //initializing time out
+    uint8_t timeOut = 50;
+    /*
+    -> HSI 
+        a. Enable HSI
+        b. Wait until HSI is ready
+        c. Switch to HSI
+        d. read switch status until confirmed 
+        e. Disable HSE 
+    */
+    RCC->CR_Bits.HSION = 1; // Enable HSI
+    while (RCC->CR_Bits.HSIRDY == 0b1u && timeOut--); // Wait until HSI is ready
+    RCC->CFGR_Bits.SW = 0b00; // Switch to HSI  (00: HSI oscillator selected as system clock)
+    timeOut = 50;   //reset time out
+    while (RCC->CFGR_Bits.SWS != 0b00  && timeOut--);  //read switch status until confirmed 
+}
+void Rcc_setSystemClk_HSE(Rcc_clkSource_t clkSource)
+{
+    //initializing time out
+    uint8_t timeOut = 50;
+    /*
+    -> HSE  
+        a. Enable HSE
+        b. Wait until HSE is ready
+        c. Switch to HSE
+        d. read switch status until confirmed 
+        e. Disable HSI (optional)
+    */
+    RCC->CR_Bits.HSEON = 1; // Enable HSE
+    timeOut = 50;   //reset time out
+    while (RCC->CR_Bits.HSERDY == 0 && timeOut--); // Wait until HSE is ready
+    RCC->CFGR_Bits.SW = 0b01; // Switch to HSE (01: HSE oscillator used as the system clock)
+    timeOut = 50;   //reset time out
+    while (RCC->CFGR_Bits.SWS != 0b01 && timeOut--);  //read switch status until confirmed  
+}
+void Rcc_setSystemClk_PLL(Rcc_clkSource_t clkSource)
+{
+    //initializing time out
+    uint8_t timeOut = 50;
+    /*
+    -> PLL
+        0. Configure PLL if not already configured
+        1. Enable PLL
+        2. Wait until PLL is ready
+        3. Switch to PLL
+        4. read switch status until confirmed
+        5. Disable previous clock source (optional)
+    */
+    printf("CAUTION: you MUST call the \"Rcc_PllConfig\" before selecting PLL_CLK.  \n");
+    RCC->CR_Bits.PLLON= 0b1u;   //Enable PLL
+    // these two lines tell the flash to that the clock speed will increase by a large amount.
+    /* When you perform this step before switching to PLL, the Flash interface has enough wait cycles to handle the faster clock.
+        Thus, the system can safely switch to the PLL as the system clock source, and the loop waiting for it to stabilize completes successfully.
+        */
+    *(uint32_t*)((0x40000000UL + 0x00020000UL) + 0x3C00UL) &= ~0b111;
+    *(uint32_t*)((0x40000000UL + 0x00020000UL) + 0x3C00UL) |= (2 & 0b111);
+    timeOut = 50;   //reset time out
+    while(0b1u != RCC->CR_Bits.PLLRDY && timeOut--); //Wait until PLL is ready 
+    RCC->CFGR_Bits.SW = 0b10u;  //Switch to PLL (10: PLL selected as system clock)
+    timeOut = 50;   //reset time out
+    while ( 0b10u != RCC->CFGR_Bits.SWS && timeOut--);   //read switch status until confirmed
 }
 
 /*
@@ -724,7 +722,7 @@ void Rcc_PllConfig(pllCongfig_t* pllConfig)
     Rcc_getSystemClk(&currentClkSource);
    if (HSI_CLK != currentClkSource)
    {
-        RCC->CR_Bits.HSION = 1; // Enable HSE
+        RCC->CR_Bits.HSION = 1; // Enable HSI
         timeOut = 50;   //reset time out
         while (RCC->CR_Bits.HSIRDY == 0 && timeOut--); // Wait until HSI is ready
    }
@@ -735,7 +733,7 @@ void Rcc_PllConfig(pllCongfig_t* pllConfig)
     //set user PLL configerations 
     RCC->PLLCFGR_Bits.PLLM = pllConfig->pllM;
     RCC->PLLCFGR_Bits.PLLN = pllConfig->pllN;
-    RCC->PLLCFGR_Bits.PLLP = pllConfig->pllP;
+    RCC->PLLCFGR_Bits.PLLP = (pllConfig->pllP/2)-1;   //only 2,4,6,8  by 0,1,2,3 as input so i used this eq:   output"0,1,2,3' = (input'2,4,6,8'/2)-1
     RCC->PLLCFGR_Bits.PLLQ = pllConfig->pllQ;
     // set the desired pll clock source
     //this next switch change the PLLSOURC Bit, *** his bit can be written only when PLL and PLLI2S are disabled ***
@@ -778,6 +776,7 @@ void Rcc_disableUnusedSystemClk()
     pllCongfig_t *pllConfig;
     // Get the current system clock source
     Rcc_getSystemClk(&localActual_clkSource);
+    pllConfig=0;    //INITIALIZING to remove the warning
     Rcc_getPllConfig(pllConfig);
     switch (localActual_clkSource)
     {

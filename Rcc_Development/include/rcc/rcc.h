@@ -9,19 +9,19 @@
 #define RCC_HSI_UNUSED_DESABEL
 
 // ERROR enum
-typedef enum 
-{
-    Rcc_enuAllGood,
-    Rcc_enuPll_P_err,
-    Rcc_enuPll_N_err
+// typedef enum 
+// {
+//     Rcc_enuAllGood,
+//     Rcc_enuPll_P_err,
+//     Rcc_enuPll_N_err
 
-}Err_flag_t;
+// }Err_flag_t;
 
-typedef enum
-{
-    Rcc_clk_disable = 0,
-    Rcc_clk_enable = 1
-}Rcc_clkState_t;
+// typedef enum
+// {
+//     Rcc_clk_disable = 0,
+//     Rcc_clk_enable = 1
+// }Rcc_clkState_t;
 
 typedef enum
 {
@@ -39,6 +39,13 @@ typedef struct
     uint32_t pllP;
     uint32_t pllQ;
 }pllCongfig_t;
+
+typedef struct
+{
+    Rcc_clkSource_t systemClkSource;
+    pllCongfig_t pllCfg;
+}Rcc_cfg_t;
+
 
 typedef enum{
     Rcc_GPIOA = ((uint64_t)0b0001 << 32)  |  (0b1 << 0),
@@ -90,6 +97,11 @@ typedef enum{
 /* Rcc function headers*/
 void Rcc_getPllConfig(pllCongfig_t *pllConfig);
 void Rcc_getSystemClk(Rcc_clkSource_t* clkSource);
+
+void Rcc_setSystemClk_HSI(Rcc_clkSource_t clkSource);
+void Rcc_setSystemClk_HSE(Rcc_clkSource_t clkSource);
+void Rcc_setSystemClk_PLL(Rcc_clkSource_t clkSource);
+
 void Rcc_setSystemClk(Rcc_clkSource_t clkSource);
 void Rcc_ctrlClk(uint32_t clk, uint8_t state);
 void Rcc_disableUnusedSystemClk(void);
@@ -101,7 +113,7 @@ void Rcc_setBusPrescaler(uint32_t bus, uint32_t prescaler);
 void Rcc_PllConfig(pllCongfig_t* pllConfig);
 
 void Rcc_init(void);
-void Rcc_setConfig(void);
+void Rcc_setConfig(Rcc_cfg_t* Rcc_cfg);
 
 
 #endif
