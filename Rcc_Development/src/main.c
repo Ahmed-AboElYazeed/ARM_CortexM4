@@ -4,30 +4,27 @@
 #include <rcc/rcc.h>
 #include <GPIO/GPIO.h>
 #include <led/led.h>
+#include "switch/switch.h"
 
 int main (void)
 {
     Rcc_enablePeripheralClk(Rcc_GPIOC);
+    SWITCH_init();
     LED_init();
-
-
+    LED_turnOFF(LED_GARAG);
     while (1)
     {
-        LED_turnON(LED_WARNING);
-        for(int i=0; i<1000000; i++)
+        while (SWITCH_readState(SWITCH_FIRST) == SWITCH_PRESSED_ON)
         {
-            asm("NOP");
-        } 
-        LED_turnOFF(LED_WARNING);
-        for(int i=0; i<1000000; i++)
+            for (volatile int i=0; i<10000; i++);
+            LED_turnON(LED_GARAG);
+        }
+        if (SWITCH_readState(SWITCH_FIRST) == SWITCH_UNPRESSED_OFF)
         {
-            asm("NOP");
-        } 
-        LED_toggle(LED_GARAG);
-        for(int i=0; i<1000000; i++)
-        {
-            asm("NOP");
-        } 
+            LED_turnOFF(LED_GARAG);
+        }
+        
+        
     }
     return 0;
 }
@@ -198,5 +195,39 @@ int main (void)
     }
     return 0;
 }
+
+*/
+
+
+
+/*               testing led driver
+
+int main (void)
+{
+    Rcc_enablePeripheralClk(Rcc_GPIOC);
+    LED_init();
+
+
+    while (1)
+    {
+        LED_turnON(LED_WARNING);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
+        LED_turnOFF(LED_WARNING);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
+        LED_toggle(LED_GARAG);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
+    }
+    return 0;
+}
+
 
 */

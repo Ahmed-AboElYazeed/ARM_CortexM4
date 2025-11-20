@@ -13,12 +13,12 @@
 typedef enum{
     LED_activeLow,
     LED_activeHigh
-}active_state_t;
+}LED_active_state_t;
 
 
 typedef struct 
 {
-    active_state_t active_state;
+    LED_active_state_t active_state;
     void * port;
     uint8_t pin;
     uint8_t pullType;
