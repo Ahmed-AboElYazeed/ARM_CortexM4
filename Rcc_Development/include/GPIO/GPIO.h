@@ -4,6 +4,14 @@
 #include <stdio.h>
 
 
+//for also compiling with g++ 
+#ifdef __cplusplus
+namspace MCAL {
+    namespace GPIO{
+        extern "C" {
+#endif
+
+
 #define GPIOA_BASEADDRESS (0x40020000)
 #define GPIOB_BASEADDRESS (0x40020400)
 #define GPIOC_BASEADDRESS (0x40020800)
@@ -151,6 +159,7 @@ typedef struct {
     GPIO_af_t alternateFunction;
 }GPIO_pinCfg_t;
 
+
 /*
 1. initialize the struct
 2. call the helper functions to set the desired config
@@ -182,5 +191,11 @@ uint8_t GPIO_togglePin_Atomic(GPIO_pinCfg_t * pinConfig);
 // void GPIO_enablePinPullUP(port, uint8_t pinNum);
 // void GPIO_enablePinPullDOWN(port, uint8_t pinNum);
 
+//for also compiling with g++ 
+#ifdef __cplusplus
+        }
+    }
+}
+#endif
 
 #endif

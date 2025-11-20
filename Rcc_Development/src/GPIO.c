@@ -28,10 +28,15 @@ typedef struct {
 #define OutTypeMSK_SHIFT    2
 #define PullMSK_SHIFT       4
 #define SpeedMSK_SHIFT      6
-#define GPIO_ModeMSK    (0b11 << ModeMSK_SHIFT)
-#define GPIO_OutTypeMSK (0b1  << OutTypeMSK_SHIFT)
-#define GPIO_PullMSK    (0b11 << PullMSK_SHIFT)
-#define GPIO_SpeedMSK   (0b11 << SpeedMSK_SHIFT)
+#define GPIO_ModeMSK_BITS     0b11u
+#define GPIO_OutTypeMSK_BITS  0b1u
+#define GPIO_PullMSK_BITS     0b11u
+#define GPIO_SpeedMSK_BITS    0b11u
+
+#define GPIO_ModeMSK    (GPIO_ModeMSK_BITS      << ModeMSK_SHIFT)
+#define GPIO_OutTypeMSK (GPIO_OutTypeMSK_BITS   << OutTypeMSK_SHIFT)
+#define GPIO_PullMSK    (GPIO_PullMSK_BITS      << PullMSK_SHIFT)
+#define GPIO_SpeedMSK   (GPIO_SpeedMSK_BITS     << SpeedMSK_SHIFT)
 
 
 
@@ -69,6 +74,11 @@ uint8_t GPIO_setOutPinMode(GPIO_pinCfg_t * pinConfig, uint8_t outType, uint8_t p
     pinConfig->mode |= ((pullType << PullMSK_SHIFT) & GPIO_PullMSK); //set the pull type bits
     return 0;
 }
+// uint8_t GPIO_setPinSpeed(GPIO_pinCfg_t * pinConfig, uint8_t speed)
+// {
+
+// }
+
 
 /*          user core functions          */
 uint8_t GPIO_creatPin(GPIO_pinCfg_t * pinConfig)
@@ -77,16 +87,16 @@ uint8_t GPIO_creatPin(GPIO_pinCfg_t * pinConfig)
     volatile GPIO_REG_t *CastedPort =(volatile GPIO_REG_t *)pinConfig->port;
 
     //configure the pin according to the pinConfig struct values
-    CastedPort->MODER &= ~(GPIO_ModeMSK << (pinConfig->pin * 2)); //clear the two bits first
+    CastedPort->MODER &= ~(GPIO_ModeMSK_BITS << (pinConfig->pin * 2)); //clear the two bits first
     CastedPort->MODER |= (pinConfig->mode & GPIO_ModeMSK) << (pinConfig->pin * 2); //set the mode bits
 
-    CastedPort->OTYPER &= ~(GPIO_OutTypeMSK << (pinConfig->pin)); //clear the output type bit first
+    CastedPort->OTYPER &= ~(GPIO_OutTypeMSK_BITS << (pinConfig->pin)); //clear the output type bit first
     CastedPort->OTYPER |= ((pinConfig->mode & GPIO_OutTypeMSK) >> OutTypeMSK_SHIFT) << (pinConfig->pin); //set the output type bit
 
-    CastedPort->PUPDR &= ~(GPIO_PullMSK << (pinConfig->pin * 2)); //clear the two bits first
+    CastedPort->PUPDR &= ~(GPIO_PullMSK_BITS << (pinConfig->pin * 2)); //clear the two bits first
     CastedPort->PUPDR |= ((pinConfig->mode & GPIO_PullMSK) >> PullMSK_SHIFT) << (pinConfig->pin * 2); //set the pull-up/pull-down bits
 
-    CastedPort->OSPEEDR &= ~(GPIO_SpeedMSK << (pinConfig->pin * 2)); //clear the two bits first
+    CastedPort->OSPEEDR &= ~(GPIO_SpeedMSK_BITS << (pinConfig->pin * 2)); //clear the two bits first
     CastedPort->OSPEEDR |= ((pinConfig->mode & GPIO_SpeedMSK) >> SpeedMSK_SHIFT) << (pinConfig->pin * 2); //set the speed bits
 
     return 0;
@@ -142,3 +152,5 @@ uint8_t GPIO_togglePin_Atomic(GPIO_pinCfg_t * pinConfig)
 }
 // uint8_t GPIO_selectAlternateFunc(GPIO_pinCfg_t * pinConfig, GPIO_af_t altFunc)
 // {}
+
+
