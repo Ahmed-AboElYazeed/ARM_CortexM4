@@ -1,5 +1,18 @@
+/*  //three methods for GPIO:
+1. using enum and array
+2. using macros and bit masking
+3. using struct
+*/
+
 #include "GPIO/GPIO.h"
 
+
+#define GPIOA_BASEADDRESS (void*)(0x40020000)
+#define GPIOB_BASEADDRESS (void*)(0x40020400)
+#define GPIOC_BASEADDRESS (void*)(0x40020800)
+#define GPIOD_BASEADDRESS (void*)(0x40020C00)
+#define GPIOE_BASEADDRESS (void*)(0x40021000)
+#define GPIOH_BASEADDRESS (void*)(0x40021C00)
 
 
 typedef struct {
@@ -14,11 +27,16 @@ typedef struct {
     volatile uint32_t AFR[2];   // GPIO alternate function registers,     Address offset: 0x20-0x24
 }GPIO_REG_t;
 
-/*  //three methods for GPIO:
-1. using enum and array
-2. using macros and bit masking
-3. using struct
-*/
+//const to keep it in the ROM '.rodata' not in the RAM
+volatile const GPIO_REG_t * GPIO_portBaseAddress[]= {       //(volatile GPIO_REG_t *)
+    GPIOA_BASEADDRESS,
+    GPIOB_BASEADDRESS,
+    GPIOC_BASEADDRESS,
+    GPIOD_BASEADDRESS,
+    GPIOE_BASEADDRESS,
+    GPIOH_BASEADDRESS
+};
+
 
 
 
@@ -52,7 +70,7 @@ typedef struct {
 */
 /*          struct filler functions        */
 
-uint8_t GPIO_identfyPin(GPIO_pinCfg_t * pinConfig, void * port, uint32_t pin) //GPIOA/B/C/D/E , pin number 0-15
+uint8_t GPIO_identfyPin(GPIO_pinCfg_t * pinConfig, GPIO_port_enu_t port, uint32_t pin) //GPIOA/B/C/D/E , pin number 0-15
 {
     pinConfig->port = port;
     pinConfig->pin = pin;
@@ -84,7 +102,7 @@ uint8_t GPIO_setOutPinMode(GPIO_pinCfg_t * pinConfig, uint8_t outType, uint8_t p
 uint8_t GPIO_creatPin(GPIO_pinCfg_t * pinConfig)
 {
     //casting the void pointer to a GPIO_REG_t pointer.
-    volatile GPIO_REG_t *CastedPort =(volatile GPIO_REG_t *)pinConfig->port;
+    volatile GPIO_REG_t *CastedPort =(volatile GPIO_REG_t *) (GPIO_portBaseAddress[pinConfig->port]);    //accessing the gpio BaseAddress array with the port number for the struct.
 
     //configure the pin according to the pinConfig struct values
     CastedPort->MODER &= ~(GPIO_ModeMSK_BITS << (pinConfig->pin * 2)); //clear the two bits first
@@ -104,7 +122,7 @@ uint8_t GPIO_creatPin(GPIO_pinCfg_t * pinConfig)
 uint8_t GPIO_setPinVal(GPIO_pinCfg_t * pinConfig, uint8_t value)
 {
     //casting the void pointer to a GPIO_REG_t pointer.
-    volatile GPIO_REG_t* CastedPort = (volatile GPIO_REG_t*) pinConfig->port;
+    volatile GPIO_REG_t* CastedPort = (volatile GPIO_REG_t*) (GPIO_portBaseAddress[pinConfig->port]);    //accessing the gpio BaseAddress array with the port number for the struct.
 
     CastedPort->ODR &= ~(0b1u << pinConfig->pin);  // insert the last bit in the value into the ODR
     CastedPort->ODR |= ((value & 0b1u)<< pinConfig->pin);  // insert the last bit in the value into the ODR
@@ -113,7 +131,7 @@ uint8_t GPIO_setPinVal(GPIO_pinCfg_t * pinConfig, uint8_t value)
 uint8_t GPIO_readPinVal(GPIO_pinCfg_t * pinConfig, uint8_t *value)
 {
     //casting the void pointer to a GPIO_REG_t pointer.
-    volatile GPIO_REG_t* CastedPort = (volatile GPIO_REG_t*) pinConfig->port;
+    volatile GPIO_REG_t* CastedPort = (volatile GPIO_REG_t*) (GPIO_portBaseAddress[pinConfig->port]);    //accessing the gpio BaseAddress array with the port number for the struct.
 
     *value = ((CastedPort->IDR) >> pinConfig->pin) & 0b1u;  //read bit
     return 0;
@@ -123,7 +141,8 @@ uint8_t GPIO_readPinVal(GPIO_pinCfg_t * pinConfig, uint8_t *value)
 uint8_t GPIO_togglePin(GPIO_pinCfg_t * pinConfig)
 {
     // Casting the void pointer to a GPIO_REG_t pointer (to access the register structure).
-    volatile GPIO_REG_t* CastedPort = (volatile GPIO_REG_t*) pinConfig->port;
+    volatile GPIO_REG_t* CastedPort = (volatile GPIO_REG_t*) (GPIO_portBaseAddress[pinConfig->port]);    //accessing the gpio BaseAddress array with the port number for the struct.
+
     CastedPort->ODR ^= (0b1u << pinConfig->pin);
     
     return 0;
@@ -132,7 +151,7 @@ uint8_t GPIO_togglePin(GPIO_pinCfg_t * pinConfig)
 // Atomic toggle using BSRR (Recommended for STM32)
 uint8_t GPIO_togglePin_Atomic(GPIO_pinCfg_t * pinConfig)
 {
-    volatile GPIO_REG_t* CastedPort = (volatile GPIO_REG_t*) pinConfig->port;
+    volatile GPIO_REG_t* CastedPort = (volatile GPIO_REG_t*) (GPIO_portBaseAddress[pinConfig->port]);    //accessing the gpio BaseAddress array with the port number for the struct.
     uint32_t pin_mask = (1U << pinConfig->pin);
 
     // Read the current state from the ODR

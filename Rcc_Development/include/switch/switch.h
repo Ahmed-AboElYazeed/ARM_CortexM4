@@ -12,6 +12,25 @@
 
 
 typedef enum{
+    SWITCH_PORTA,
+    SWITCH_PORTB,
+    SWITCH_PORTC,
+    SWITCH_PORTD,
+    SWITCH_PORTE,
+    SWITCH_PORTH
+}SWITCH_port_enu_t;
+
+/*  //4. pull-up/pull-down
+00: No pull-up, pull-down
+01: Pull-up
+10: Pull-down
+11: Reserved*/
+#define NO_PULL     0b00u
+#define PULL_UP     0b01u
+#define PULL_DOWN   0b10u
+
+
+typedef enum{
     SWITCH_activeLow,
     SWITCH_activeHigh
 }SWITCH_active_state_t;
@@ -20,7 +39,7 @@ typedef enum{
 typedef struct 
 {
     SWITCH_active_state_t active_state;
-    void * port;
+    SWITCH_port_enu_t port;
     uint8_t pin;
     uint8_t pullType;
 }SWITCH_cfg_t;

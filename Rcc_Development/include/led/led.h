@@ -10,6 +10,27 @@
 #define HIGH  1
 #define LOW   0
 
+
+typedef enum{
+    LED_PORTA,
+    LED_PORTB,
+    LED_PORTC,
+    LED_PORTD,
+    LED_PORTE,
+    LED_PORTH
+}LED_port_enu_t;
+
+
+
+/*  //4. pull-up/pull-down
+00: No pull-up, pull-down
+01: Pull-up
+10: Pull-down
+11: Reserved*/
+#define NO_PULL     0b00u
+#define PULL_UP     0b01u
+#define PULL_DOWN   0b10u
+
 typedef enum{
     LED_activeLow,
     LED_activeHigh
@@ -19,7 +40,7 @@ typedef enum{
 typedef struct 
 {
     LED_active_state_t active_state;
-    void * port;
+    LED_port_enu_t port;
     uint8_t pin;
     uint8_t pullType;
 }LED_cfg_t;

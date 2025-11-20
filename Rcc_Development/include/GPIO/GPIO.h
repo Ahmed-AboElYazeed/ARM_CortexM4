@@ -12,21 +12,28 @@ namspace MCAL {
 #endif
 
 
-#define GPIOA_BASEADDRESS (0x40020000)
-#define GPIOB_BASEADDRESS (0x40020400)
-#define GPIOC_BASEADDRESS (0x40020800)
-#define GPIOD_BASEADDRESS (0x40020C00)
-#define GPIOE_BASEADDRESS (0x40021000)
-#define GPIOH_BASEADDRESS (0x40021C00)
+// #define GPIOA_BASEADDRESS (0x40020000)
+// #define GPIOB_BASEADDRESS (0x40020400)
+// #define GPIOC_BASEADDRESS (0x40020800)
+// #define GPIOD_BASEADDRESS (0x40020C00)
+// #define GPIOE_BASEADDRESS (0x40021000)
+// #define GPIOH_BASEADDRESS (0x40021C00)
 
-#define GPIOA ((void*)GPIOA_BASEADDRESS)
-#define GPIOB ((void*)GPIOB_BASEADDRESS)
-#define GPIOC ((void*)GPIOC_BASEADDRESS)
-#define GPIOD ((void*)GPIOD_BASEADDRESS)
-#define GPIOE ((void*)GPIOE_BASEADDRESS)
-#define GPIOH ((void*)GPIOH_BASEADDRESS)
+// #define GPIOA ((void*)GPIOA_BASEADDRESS)
+// #define GPIOB ((void*)GPIOB_BASEADDRESS)
+// #define GPIOC ((void*)GPIOC_BASEADDRESS)
+// #define GPIOD ((void*)GPIOD_BASEADDRESS)
+// #define GPIOE ((void*)GPIOE_BASEADDRESS)
+// #define GPIOH ((void*)GPIOH_BASEADDRESS)
 
-
+typedef enum{
+    GPIOA,
+    GPIOB,
+    GPIOC,
+    GPIOD,
+    GPIOE,
+    GPIOH
+}GPIO_port_enu_t;
 
 
 /*  // 1. mode
@@ -154,7 +161,7 @@ typedef enum {
 
 typedef struct {
     uint32_t pin;   // pin number
-    void * port;    // pointer to the register address
+    GPIO_port_enu_t port;    // give the number of the element in the array of pointer to the register address "this array implemented in GPIO.C"
     uint8_t mode;      // binary contain the GPIO config
     GPIO_af_t alternateFunction;
 }GPIO_pinCfg_t;
@@ -167,7 +174,7 @@ typedef struct {
 
 
 /*          struct filler functions        */
-uint8_t GPIO_identfyPin(GPIO_pinCfg_t * pinConfig, void * port, uint32_t pin); //GPIOA/B/C/D/E , pin number 0-15
+uint8_t GPIO_identfyPin(GPIO_pinCfg_t * pinConfig, GPIO_port_enu_t port, uint32_t pin); //GPIOA/B/C/D/E , pin number 0-15
 uint8_t GPIO_setPinDirMode(GPIO_pinCfg_t * pinConfig, uint8_t dir);    //input, output, alternate, analog
 uint8_t GPIO_setOutPinMode(GPIO_pinCfg_t * pinConfig, uint8_t outType, uint8_t pullType);  //push-pull/open-drain , pull-up/pull-down
 
