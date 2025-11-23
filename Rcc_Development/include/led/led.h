@@ -21,7 +21,6 @@ typedef enum{
 }LED_port_enu_t;
 
 
-
 /*  //4. pull-up/pull-down
 00: No pull-up, pull-down
 01: Pull-up

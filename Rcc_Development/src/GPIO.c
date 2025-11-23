@@ -51,6 +51,9 @@ volatile const GPIO_REG_t * GPIO_portBaseAddress[]= {       //(volatile GPIO_REG
 #define GPIO_PullMSK_BITS     0b11u
 #define GPIO_SpeedMSK_BITS    0b11u
 
+#define GPIO_AltFuncMSK_BITS  0b1111u
+
+
 #define GPIO_ModeMSK    (GPIO_ModeMSK_BITS      << ModeMSK_SHIFT)
 #define GPIO_OutTypeMSK (GPIO_OutTypeMSK_BITS   << OutTypeMSK_SHIFT)
 #define GPIO_PullMSK    (GPIO_PullMSK_BITS      << PullMSK_SHIFT)
@@ -169,7 +172,22 @@ uint8_t GPIO_togglePin_Atomic(GPIO_pinCfg_t * pinConfig)
     
     return 0;
 }
-// uint8_t GPIO_selectAlternateFunc(GPIO_pinCfg_t * pinConfig, GPIO_af_t altFunc)
-// {}
+uint8_t GPIO_selectAlternateFunc(GPIO_pinCfg_t * pinConfig, GPIO_af_t altFunc)
+{
+    volatile GPIO_REG_t* CastedPort = (volatile GPIO_REG_t*) (GPIO_portBaseAddress[pinConfig->port]);    //accessing the gpio BaseAddress array with the port number for the struct.
+
+    if (0 == pinConfig->pin/8)  //first 8 pins  
+    {
+        CastedPort->AFR[0] &= ~(GPIO_AltFuncMSK_BITS << (pinConfig->pin * 4)); //clear the four bits first
+        CastedPort->AFR[0] |= (altFunc & GPIO_AltFuncMSK_BITS) << (pinConfig->pin * 4); //set the alternative function bits
+    }
+    else    //second 8 pins
+    {
+        CastedPort->AFR[1] &= ~(GPIO_AltFuncMSK_BITS << (pinConfig->pin * 4)); //clear the four bits first
+        CastedPort->AFR[1] |= (altFunc & GPIO_AltFuncMSK_BITS) << (pinConfig->pin * 4); //set the alternative function bits
+    }
+
+    return 0;
+}
 
 

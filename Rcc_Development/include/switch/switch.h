@@ -7,9 +7,7 @@
 #define true  1
 #define false 0
 
-#define HIGH  1
-#define LOW   0
-
+#define DEBOUNSING_DELAY 100000UL
 
 typedef enum{
     SWITCH_PORTA,
@@ -29,6 +27,12 @@ typedef enum{
 #define PULL_UP     0b01u
 #define PULL_DOWN   0b10u
 
+#define HIGH  1
+#define LOW   0
+typedef enum{
+    PIN_LOW,
+    PIN_HIGH
+}PIN_state_enm_t;
 
 typedef enum{
     SWITCH_activeLow,
