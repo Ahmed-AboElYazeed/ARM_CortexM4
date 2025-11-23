@@ -12,7 +12,7 @@ void SWITCH_init(void)
         GPIO_identfyPin(&GPIO_SWITCHPin[i],SWITCH_cfg[i].port,SWITCH_cfg[i].pin); //GPIOA/B/C/D/E , pin number 0-15
         GPIO_setPinDirMode(&GPIO_SWITCHPin[i],INPUT);  //input, output, alternate, analog
         GPIO_setOutPinMode(&GPIO_SWITCHPin[i],PUSH_PULL,SWITCH_cfg[i].pullType);   //push-pull/open-drain , pull-up/pull-down
-        GPIO_selectAlternateFunc(&GPIO_LEDPin[i], DIO); 
+        GPIO_selectAlternateFunc(&GPIO_SWITCHPin[i], DIO); 
         GPIO_creatPin(&GPIO_SWITCHPin[i]);
     }
 }
