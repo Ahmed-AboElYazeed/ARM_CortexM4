@@ -5,9 +5,13 @@
 #include <GPIO/GPIO.h>
 #include <led/led.h>
 #include "switch/switch.h"
+#include "NVIC/NVIC.h"
 
 int main (void)
 {
+
+    NVIC_EnableIRQ(4);
+
     Rcc_init();
     Rcc_enablePeripheralClk(Rcc_GPIOC);
     SWITCH_init();
