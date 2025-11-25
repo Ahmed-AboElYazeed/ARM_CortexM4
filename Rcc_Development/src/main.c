@@ -10,7 +10,9 @@
 int main (void)
 {
 
-    NVIC_EnableIRQ(4);
+    //NVIC_EnableIRQ(25);
+    // NVIC_SetPriority(25,(0b1110ul<<4));
+    // volatile readPriority = NVIC_GetPriority(25);
 
     Rcc_init();
     Rcc_enablePeripheralClk(Rcc_GPIOC);
