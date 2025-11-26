@@ -7,7 +7,9 @@
 */
 //Intera Vector Table:
 typedef enum{
-    RESET
+    WWDG,
+    EXTI16_PVD
+
 }IRQn_t;
 
 //Enables an interrupt or exception.

@@ -441,7 +441,7 @@ void Rcc_init(void)
         
         //FOR VONFIGURING PLL
         Rcc_cfg_t Rcc_cfg;
-        Rcc_cfg.systemClkSource = PLL_CLK;
+        Rcc_cfg.systemClkSource = HSI_CLK;
         Rcc_cfg.pllCfg.pllSource = HSI_CLK;
         Rcc_cfg.pllCfg.pllM = 8 ;
         Rcc_cfg.pllCfg.pllN = 168 ;

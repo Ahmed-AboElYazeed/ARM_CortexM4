@@ -18,48 +18,45 @@
 //Enables an interrupt or exception.
 void NVIC_EnableIRQ(IRQn_t IRQn)
 {
-        //uint8_t timeOut =50;
-    //                                             \/ set the bit
-    NVIC_ISERx_VALUE_f( ((uint32_t)(IRQn/32))) |= (0b1u << IRQn%32);
-    //                                 ^Byte number           ^Bit number
-
-    //i think it does not worth a time out check. 
-        // while(0b1u != READ_BIT(NVIC_ISERx_VALUE_f( ((uint32_t)(IRQn/32))), IRQn%32) && timeOut--); //Wait until Bit is set
-        // if (timeOut =< 0)
-        // {
-        //     //return ErrorState;
-        // }
+    NVIC_Reg->ISER[IRQn/32] |= (0b1u << IRQn%32);
+    // //                                             \/ set the bit
+    // NVIC_ISERx_VALUE_f( ((uint32_t)(IRQn/32))) |= (0b1u << IRQn%32);
+    // //                                 ^Byte number           ^Bit number
 }
 
 //Disables an interrupt or exception.
 void NVIC_DisableIRQ(IRQn_t IRQn)
 {
-    //                                             \/ set the bit
-    NVIC_ICERx_VALUE_f( ((uint32_t)(IRQn/32))) |= (0b1u << IRQn%32);
-    //                                 ^Byte number           ^Bit number
+    NVIC_Reg->ICER[IRQn/32] |= (0b1u << IRQn%32);
+    // //                                             \/ set the bit
+    // NVIC_ICERx_VALUE_f( ((uint32_t)(IRQn/32))) |= (0b1u << IRQn%32);
+    // //                                 ^Byte number           ^Bit number
 }
 
 //Sets the pending status of interrupt or exception to 1.
 void NVIC_SetPendingIRQ(IRQn_t IRQn)
 {
-    //                                             \/ set the bit
-    NVIC_ISPRx_VALUE_f( ((uint32_t)(IRQn/32))) |= (0b1u << IRQn%32);
-    //                                 ^Byte number           ^Bit number
+    NVIC_Reg->ISPR[IRQn/32] |= (0b1u << IRQn%32);
+    // //                                             \/ set the bit
+    // NVIC_ISPRx_VALUE_f( ((uint32_t)(IRQn/32))) |= (0b1u << IRQn%32);
+    // //                                 ^Byte number           ^Bit number
 }
 
 //Clears the pending status of interrupt or exception to 0.       
 void NVIC_ClearPendingIRQ(IRQn_t IRQn)     
 {
-    //                                             \/ set the bit
-    NVIC_ICPRx_VALUE_f( ((uint32_t)(IRQn/32))) |= (0b1u << IRQn%32);
-    //                                 ^Byte number           ^Bit number
+    NVIC_Reg->ICPR[IRQn/32] |= (0b1u << IRQn%32);
+    // //                                             \/ set the bit
+    // NVIC_ICPRx_VALUE_f( ((uint32_t)(IRQn/32))) |= (0b1u << IRQn%32);
+    // //                                 ^Byte number           ^Bit number
 }
 
 //Reads the pending status of interrupt or exception. This function returns non-zero value if the pending status is set to 1.
 uint32_t NVIC_GetPendingIRQ(IRQn_t IRQn)     
 {
-    return READ_BIT(NVIC_ISPRx_VALUE_f(((uint32_t)(IRQn/32))), IRQn%32);
-    //                                               ^Byte number ^Bit number
+    return ((NVIC_Reg->ISPR[IRQn/32] >> (IRQn%32)) & 0b1u);
+    // return READ_BIT(NVIC_ISPRx_VALUE_f(((uint32_t)(IRQn/32))), IRQn%32);
+    // //                                               ^Byte number ^Bit number
 }
 
 /* Sets the priority of an interrupt or exception with configurable priority level to 1.
@@ -69,14 +66,24 @@ uint32_t NVIC_GetPendingIRQ(IRQn_t IRQn)
  */
 void NVIC_SetPriority(IRQn_t IRQn, uint32_t priority)       // 0b1111xxxx << bit number
 {
-    NVIC_IPRx_VALUE_f( ((uint32_t)(IRQn/4))) |= ((0b11110000ul & priority) << ((IRQn%4)*8));
-    //                                 ^Byte number                                ^Bit number
+    //volatile NVIC_Reg_t* NVIC_Reg = (volatile NVIC_Reg_t*)NVIC_ISERx_BASEADD;
+    if (priority <= 239 && priority >=0)
+    {
+        NVIC_Reg->IPR[IRQn] = priority;
+    }
+    else
+    {
+        //error
+    }
+    // NVIC_IPRx_VALUE_f( ((uint32_t)(IRQn/4))) |= ((0b11110000ul & priority) << ((IRQn%4)*8));
+    // //                                 ^Byte number                                ^Bit number
 }
 
 //Reads the priority of an interrupt or exception with configurable priority level. This function return the current priority level.
 uint32_t NVIC_GetPriority(IRQn_t IRQn) 
 {
-    return ( NVIC_IPRx_VALUE_f( ((uint32_t)(IRQn/4))) ) >> ((IRQn%4)*8);        //returned value: priority range: 16 -> 240 
+    return (NVIC_Reg->ISPR[IRQn]);
+    // return ( NVIC_IPRx_VALUE_f( ((uint32_t)(IRQn/4))) ) >> ((IRQn%4)*8);        //returned value: priority range: 16 -> 240 
 }
 
 
@@ -98,8 +105,10 @@ uint32_t NVIC_GetActive (IRQn_t IRQn)
     //                                               ^Byte number ^Bit number
 }
 
-//Reset the system
-void NVIC_SystemReset (void)
-{
+
+
+// //Reset the system
+// void NVIC_SystemReset (void)
+// {
     
-}
+// }
