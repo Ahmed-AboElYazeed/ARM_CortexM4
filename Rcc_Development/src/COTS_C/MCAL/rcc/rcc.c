@@ -836,3 +836,66 @@ void Rcc_enablePeripheralClk(uint64_t peripheral)   //or should it be  (Rcc_peri
             break;
     }
 }
+
+
+void Rcc_GetSysClockFrequency(uint32_t *Ret_Frequency)
+{
+    uint32_t Local_PLL_frequency =0;
+    if (NULL != Ret_Frequency)
+    {
+        switch (RCC->CFGR_Bits.SWS)
+        {
+        case 0b00: // HSI
+            *Ret_Frequency = HSI_FREQ;
+            break;
+        case 0b01: // HSE
+            *Ret_Frequency = HSE_FREQ;
+            break;
+        case 0b10: // PLL
+
+            
+
+            if (RCC->PLLCFGR_Bits.PLLSRC == HSI_CLK)
+            {
+                Local_PLL_frequency = HSI_FREQ;
+            }
+            else if (RCC->PLLCFGR_Bits.PLLSRC == HSE_CLK)
+            {
+                Local_PLL_frequency = HSE_FREQ;
+            }
+            else
+            {
+                // Empty Else
+            }
+            if (RCC->PLLCFGR_Bits.PLLM != 0)
+            {
+             Local_PLL_frequency = Local_PLL_frequency / RCC->PLLCFGR_Bits.PLLM;
+                Local_PLL_frequency = Local_PLL_frequency * RCC->PLLCFGR_Bits.PLLN;
+                switch (RCC->PLLCFGR_Bits.PLLP)
+                {
+                case PLL_P_2:
+                    Local_PLL_frequency = Local_PLL_frequency / 2;
+                    break;
+                case PLL_P_4:
+                    Local_PLL_frequency = Local_PLL_frequency / 4;
+                    break;
+                case PLL_P_6:
+                    Local_PLL_frequency = Local_PLL_frequency / 6;
+                    break;
+                case PLL_P_8:
+                    Local_PLL_frequency = Local_PLL_frequency / 8;
+                    break;
+                default:
+                    break;
+                }
+
+                *Ret_Frequency = Local_PLL_frequency;
+
+                break;
+            }
+
+        default:
+            break;
+        }
+    }
+}

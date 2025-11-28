@@ -15,18 +15,24 @@ void SYSTICK_ISR_func (void)
     LED_toggle(LED_GARAG);
 }
 
+void fun ()
+{
+    __asm volatile ("CPSIE i");
+}
+
 int main (void)
 {
 
 
-    NVIC_EnableIRQ(TEST);
-    //NVIC_SetPriority(25,(0b1110ul<<4));
-    //volatile int readPending =0;
+    // NVIC_EnableIRQ(TEST);
+    // //NVIC_SetPriority(25,(0b1110ul<<4));
+    // //volatile int readPending =0;
 
     Rcc_init();
     Rcc_enablePeripheralClk(Rcc_GPIOC);
 
-
+    fun();
+    
     SYSTICK_Init(16000000000, 1);
     SYSTICK_setValue(16000000);
 
@@ -38,8 +44,12 @@ int main (void)
     SYSTICK_confgCallBackFun(SYSTICK_ISR_func);
     SYSTICK_start();
 
-
-    // while (1)
+    volatile int x=4;
+    while (1)
+    {
+        x++;
+    }
+    // while(1)
     // {
     //     // if (SWITCH_readState(SWITCH_FIRST) == SWITCH_PRESSED_ON)
     //     // {

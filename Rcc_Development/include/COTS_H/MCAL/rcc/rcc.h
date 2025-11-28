@@ -8,6 +8,15 @@
 // Defiene this macro to disable previous clock source after switching
 #define RCC_HSI_UNUSED_DESABEL
 
+//======================= RCC Clock frequencies ========================
+#define HSI_FREQ 16000000UL
+#define HSE_FREQ 25000000UL // change this to current HSE frequency (if using external HSE)
+
+#define PLL_P_2         0b00
+#define PLL_P_4         0b01
+#define PLL_P_6         0b10
+#define PLL_P_8         0b11
+
 // ERROR enum
 // typedef enum 
 // {
