@@ -65,6 +65,7 @@
   "C_Cpp.errorSquiggles": "disabled",
   "files.associations": {
     "gpio.h": "c",
-    "switch.h": "c"
+    "switch.h": "c",
+    "LCD.C": "cpp"
   }
 }

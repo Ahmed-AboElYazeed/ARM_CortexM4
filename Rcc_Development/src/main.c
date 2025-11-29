@@ -7,73 +7,154 @@
 #include "switch/switch.h"
 #include "NVIC/NVIC.h"
 #include "SYSTICK/SYSTICK.h"
+#include "Sched.h"
 
-#define TEST 25
-
-void SYSTICK_ISR_func (void)
+void toggleLED (void * arg)
 {
-    LED_toggle(LED_GARAG);
+    LED_toggle((LED_names_t)arg);
 }
 
-void fun ()
+
+
+Runnable_t LED_Runnable =
 {
-    __asm volatile ("CPSIE i");
-}
+    .func= toggleLED,
+    .priority = 1,
+    .priodicity_ticks=1000,   //ms
+    .first_delay=0,
+    .arg = (void*)LED_GARAG,
+};
 
-int main (void)
+Runnable_t LED_Runnable2 =
+{
+    .func= toggleLED,
+    .priority = 2,
+    .priodicity_ticks=2000,   //ms
+    .first_delay=0,
+    .arg = (void*)LED_WARNING,
+};
+
+int main ()
 {
 
-
-    // NVIC_EnableIRQ(TEST);
-    // //NVIC_SetPriority(25,(0b1110ul<<4));
-    // //volatile int readPending =0;
 
     Rcc_init();
     Rcc_enablePeripheralClk(Rcc_GPIOC);
 
-    fun();
-    
-    SYSTICK_Init(16000000000, 1);
-    SYSTICK_setValue(16000000);
-
-    SWITCH_init();
+    //SWITCH_init();
     LED_init();
     LED_turnOFF(LED_GARAG);
     LED_turnON(LED_GARAG);
 
-    SYSTICK_confgCallBackFun(SYSTICK_ISR_func);
-    SYSTICK_start();
+    //__asm volatile ("CPSIE i");
+    Sched_init(1);
+    Sched_registerRunnable(&LED_Runnable);
+    Sched_registerRunnable(&LED_Runnable2);
+    Sched_start();
 
-    volatile int x=4;
+    volatile int x=0;
     while (1)
     {
         x++;
     }
-    // while(1)
-    // {
-    //     // if (SWITCH_readState(SWITCH_FIRST) == SWITCH_PRESSED_ON)
-    //     // {
-    //     //     for (volatile int i=0; i<10000; i++);
-    //     //     LED_turnON(LED_GARAG);
-    //     // }
-    //     // if (SWITCH_readState(SWITCH_FIRST) == SWITCH_UNPRESSED_OFF)
-    //     // {
-    //     //     LED_turnOFF(LED_GARAG);
-    //     // }
-    //     NVIC_SetPendingIRQ(TEST);
-    //     readPending = NVIC_GetPendingIRQ(TEST);
-    //     if (readPending)
-    //     {
-    //         NVIC_ClearPendingIRQ(TEST);
-    //         LED_toggle(LED_GARAG);
-    //         //for (volatile int i=0; i<1000000; i++);
-    //     }
-    //     NVIC_SetPendingIRQ(TEST);
-        
-        
-    // }
+
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// #define TEST 25
+
+// void SYSTICK_ISR_func (void)
+// {
+//     LED_toggle(LED_GARAG);
+// }
+
+// void fun ()
+// {
+//     __asm volatile ("CPSIE i");
+// }
+
+// int main (void)
+// {
+
+
+//     // NVIC_EnableIRQ(TEST);
+//     // //NVIC_SetPriority(25,(0b1110ul<<4));
+//     // //volatile int readPending =0;
+
+//     Rcc_init();
+//     Rcc_enablePeripheralClk(Rcc_GPIOC);
+
+//     fun();
+    
+//     // SYSTICK_Init(1);
+//     // SYSTICK_setValue(16000000);
+
+//     SWITCH_init();
+//     LED_init();
+//     LED_turnOFF(LED_GARAG);
+//     LED_turnON(LED_GARAG);
+
+//     // SYSTICK_confgCallBackFun(SYSTICK_ISR_func);
+//     // SYSTICK_start();
+
+//     volatile int x=4;
+//     while (1)
+//     {
+//         LED_toggle(LED_GARAG);
+//         SYSTICK_WaitBlocking_ms(1000);
+//     }
+//     // while(1)
+//     // {
+//     //     // if (SWITCH_readState(SWITCH_FIRST) == SWITCH_PRESSED_ON)
+//     //     // {
+//     //     //     for (volatile int i=0; i<10000; i++);
+//     //     //     LED_turnON(LED_GARAG);
+//     //     // }
+//     //     // if (SWITCH_readState(SWITCH_FIRST) == SWITCH_UNPRESSED_OFF)
+//     //     // {
+//     //     //     LED_turnOFF(LED_GARAG);
+//     //     // }
+//     //     NVIC_SetPendingIRQ(TEST);
+//     //     readPending = NVIC_GetPendingIRQ(TEST);
+//     //     if (readPending)
+//     //     {
+//     //         NVIC_ClearPendingIRQ(TEST);
+//     //         LED_toggle(LED_GARAG);
+//     //         //for (volatile int i=0; i<1000000; i++);
+//     //     }
+//     //     NVIC_SetPendingIRQ(TEST);
+        
+        
+//     // }
+//     return 0;
+// }
 
 
 

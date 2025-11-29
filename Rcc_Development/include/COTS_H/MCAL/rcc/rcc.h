@@ -124,5 +124,7 @@ void Rcc_PllConfig(pllCongfig_t* pllConfig);
 void Rcc_init(void);
 void Rcc_setConfig(Rcc_cfg_t* Rcc_cfg);
 
+void Rcc_GetSysClockFrequency(uint32_t *Ret_Frequency);
+
 
 #endif

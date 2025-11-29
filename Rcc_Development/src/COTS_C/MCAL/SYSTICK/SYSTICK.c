@@ -1,5 +1,6 @@
 #include "SYSTICK/SYSTICK.h"
 #include "SYSTICK/SYSTICK_prv.h"
+#include "rcc/rcc.h"
 
 #define NULLPTR ((void*)0)
 
@@ -8,6 +9,10 @@
 #define PLL_P_6         0b10
 #define PLL_P_8         0b11
 
+
+
+volatile uint64_t waitCounter = 0; 
+
 void (*userSYSTICK_func)(void);
 
 void SysTick_Handler (void)
@@ -15,11 +20,16 @@ void SysTick_Handler (void)
     userSYSTICK_func();
 }
 
-uint64_t systemCLK;
-
-void SYSTICK_Init(uint64_t clk, uint32_t prescaller)
+void SYSTICK_waitCounter (void)
 {
-    systemCLK = clk;
+    waitCounter++;
+}
+
+
+
+
+void SYSTICK_Init(uint32_t prescaller)
+{
     if (prescaller == 8)
     {
         SYSTICK_Reg->STK_CTRL_Bits.CLKSOURCE=0; //0: AHB/8
@@ -28,7 +38,7 @@ void SYSTICK_Init(uint64_t clk, uint32_t prescaller)
     {
         SYSTICK_Reg->STK_CTRL_Bits.CLKSOURCE=1; //1: Processor clock (AHB)
     }
-    SYSTICK_Reg->STK_CTRL_Bits.TICKINT = 1;     //1: Counting down to zero to asserts the SysTick exception request.
+    SYSTICK_Reg->STK_CTRL_Bits.TICKINT = 1;     //1: Counting down to zero to asserts the SysTick exception request. (ENable systick interrupt)
 }
 
 void SYSTICK_confgCallBackFun(void (*fun)(void))
@@ -62,40 +72,29 @@ void SYSTICK_stop()
 }
 
 
-SYSTICK_ErrorStatus_t SYSTICK_Wait_ms(u32 Copy_u32Delay_ms)
+void SYSTICK_WaitBlocking_ms(uint32_t Delay_ms)
 {
-    SYSTICK_ErrorStatus_t error_status = SYSTICK_OK;
+    uint32_t Local_ClockFrequency = 0;
+    uint32_t Local_Clockticks = 0;
+    SYSTICK_Init(1);
+    Rcc_GetSysClockFrequency(&Local_ClockFrequency);
 
-    u32 Local_ClockFrequency = 0;
-    u32 Local_Clockticks = 0;
-    RCC_ErrorStatus_t rcc_error_status = RCC_GetSysClockFrequency(&Local_ClockFrequency);
-    if (RCC_OK != rcc_error_status)
+    if (SYSTICK_Reg->STK_CTRL_Bits.CLKSOURCE == 8)
     {
-        error_status = SYSTICK_RCC_ERROR;
+        Local_Clockticks = (Local_ClockFrequency / 8 / 1000) * Delay_ms;
     }
     else
     {
-        if (SYSTICK->CTRL.bits.CLKSOURCE == SYSTEMCLOCK_DIV_8)
-        {
-            Local_Clockticks = (Local_ClockFrequency / 8 / 1000) * Copy_u32Delay_ms;
-        }
-        else
-        {
-            Local_Clockticks = (Local_ClockFrequency / 1000) * Copy_u32Delay_ms;
-        }
-
-        error_status = SYSTICK_SetSystickReloadValue(Local_Clockticks - 1);
-        if (error_status != SYSTICK_INVALID_RELOAD_VALUE)
-        {
-            SYSTICK->VAL.bits.CURRENT = 0; // clear current value of ticks
-            SYSTICK_Enable();
-            SYSTICK_EnableInterrupt();
-        }
-        else
-        {
-            // Empty else
-        }
+        Local_Clockticks = (Local_ClockFrequency / 1000) * Delay_ms;
     }
 
-    return error_status;
+    
+
+    SYSTICK_setValue(Local_Clockticks);
+    SYSTICK_confgCallBackFun(SYSTICK_waitCounter);
+    SYSTICK_start();
+
+    while (waitCounter != 1);
+    
+    waitCounter = 0;
 } 
