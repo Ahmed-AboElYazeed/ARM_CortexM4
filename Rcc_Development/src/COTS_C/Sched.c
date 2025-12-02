@@ -19,14 +19,10 @@ ErrState_enu_t Sched_init (uint32_t tickTime_ms)
     SYSTICK_Init(1);
     Rcc_GetSysClockFrequency(&Local_ClockFrequency);
 
-    // if (SYSTICK_Reg->STK_CTRL_Bits.CLKSOURCE == 8)
-    // {
-    //     Local_Clockticks = (Local_ClockFrequency / 8 / 1000) * tickTime;
-    // }
-    // else
-    // {
-        Local_Clockticks = (Local_ClockFrequency / 1000) * tickTime_ms;
-    // }
+    // Local_Clockticks = (Local_ClockFrequency / 8 / 1000) * tickTime;
+    // assuming it work with /1 prescaller "until it be handelled <latter>"
+    Local_Clockticks = (Local_ClockFrequency / 1000) * tickTime_ms;
+
     SYSTICK_setValue(Local_Clockticks);
 
     SYSTICK_confgCallBackFun(Sched_exec);

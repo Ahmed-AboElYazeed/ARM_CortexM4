@@ -5,6 +5,7 @@
 typedef enum{
     LED_WARNING,
     LED_GARAG,
+    LED_THIRD,
     LED_LEN //led number
 }LED_names_t;
 

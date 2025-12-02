@@ -16,5 +16,12 @@ const LED_cfg_t LED_cfg [LED_LEN]
         .port = LED_PORTC,
         .pin = 14,
         .pullType= PULL_DOWN,
+    },
+    [LED_THIRD]=
+    {
+        .active_state = LED_activeLow,
+        .port = LED_PORTA,
+        .pin = 11,
+        .pullType= PULL_DOWN,
     }
 };

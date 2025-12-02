@@ -8,7 +8,82 @@
 #include "NVIC/NVIC.h"
 #include "SYSTICK/SYSTICK.h"
 #include "Sched.h"
+#include "LCD/LCD.h"
 
+
+LCD_cfg_t LCD_cfg[LCD_NUMBER];
+
+
+int main()
+{
+    Rcc_init();
+    Rcc_enablePeripheralClk(Rcc_GPIOA);
+    LCD_init(&LCD_cfg[LCD_0]);
+    // LCD_writeChar(&LCD_cfg[LCD_0], 'z');
+    LCD_writeString(&LCD_cfg[LCD_0], "Zee");
+    return 0;
+}
+
+
+
+
+
+// int main (void)
+// {
+//     Rcc_enablePeripheralClk(Rcc_GPIOA);
+//     LED_init();
+
+
+//     while (1)
+//     {
+//         LED_turnON(LED_THIRD);
+//         for(int i=0; i<1000000; i++)
+//         {
+//             asm("NOP");
+//         } 
+//         LED_turnOFF(LED_THIRD);
+//         for(int i=0; i<1000000; i++)
+//         {
+//             asm("NOP");
+//         } 
+//         LED_toggle(LED_THIRD);
+//         for(int i=0; i<1000000; i++)
+//         {
+//             asm("NOP");
+//         } 
+//     }
+//     return 0;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 void toggleLED (void * arg)
 {
     LED_toggle((LED_names_t)arg);
@@ -60,7 +135,7 @@ int main ()
 
     return 0;
 }
-
+*/
 
 
 
