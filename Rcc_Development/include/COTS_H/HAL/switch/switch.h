@@ -9,6 +9,7 @@
 
 #define DEBOUNSING_DELAY 100000UL
 
+
 typedef enum{
     SWITCH_PORTA,
     SWITCH_PORTB,
@@ -59,5 +60,7 @@ typedef enum
 void SWITCH_init(void);
 uint8_t SWITCH_readState(SWITCH_names_t SWITCH_name);
 
+void SWITCH_init_sch(void);
+uint8_t SWITCH_readState_sch(SWITCH_names_t SWITCH_name);
 
 #endif

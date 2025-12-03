@@ -3,10 +3,20 @@
 
 #include <stdint.h>
 
-#define MAX_RUNNABLE 5      // assumed
+// #define MAX_RUNNABLE 5      // assumed
 #define NULLPTR ((void*)0)
 
 typedef void (*cbf_t) (void*);
+
+// remote used priority         <<<<<<----------- NOTE
+/*
+    switch driver: readSWITCHs === 10
+*/
+typedef enum{
+    SWITCH_RUNNABLE_PRIORITY,
+    LED_RUNNABLE_PRIORITY,
+    MAX_RUNNABLE
+}Runnable_Priority_t;
 
 typedef enum {
     ALL_GOOD,
