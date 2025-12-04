@@ -45,6 +45,7 @@ typedef enum{
 typedef struct  
 {
     GPIO_pinCfg_t LCD_pins[LCD_PINNUMBER];
+    uint32_t cursorPosition;
     uint8_t mode;
 }LCD_cfg_t;
 
@@ -75,8 +76,10 @@ void LCD_init (LCD_cfg_t* LCD);
 void LCD_writeChar (LCD_cfg_t* LCD, char character); 
 void LCD_writeString (LCD_cfg_t* LCD, char* string);
 void LCD_clearLCD (LCD_cfg_t* LCD);
-void LCD_setCursorPosition (LCD_cfg_t* LCD);
-void LCD_saveCustomCharacter (LCD_cfg_t* LCD);
+void LCD_setCursorPosition (LCD_cfg_t* LCD, uint32_t position);
+void LCD_writeCharPattern(uint8_t charIndex, uint8_t *pattern);
+void LCD_saveCustomCharacter (LCD_cfg_t* LCD, const uint8_t charIndex);
+void LCD_saveAllCustomCharacter (LCD_cfg_t* LCD);
 
 // void sendCommand (LCD_cfg_t* LCD, COMMAND_enm_t command);
 // void sendData (LCD_cfg_t* LCD, uint32_t data);
