@@ -762,12 +762,15 @@ void Rcc_PllConfig(pllCongfig_t* pllConfig)
 
 void Rcc_getPllConfig(pllCongfig_t *pllConfig)
 {
-    //read user PLL configerations 
-    pllConfig->pllSource = RCC->PLLCFGR_Bits.PLLSRC;
-    pllConfig->pllM = RCC->PLLCFGR_Bits.PLLM;
-    pllConfig->pllN = RCC->PLLCFGR_Bits.PLLN;
-    pllConfig->pllP = RCC->PLLCFGR_Bits.PLLP;
-    pllConfig->pllQ = RCC->PLLCFGR_Bits.PLLQ;
+    if (pllConfig != NULL)
+    {
+        //read user PLL configerations 
+        pllConfig->pllSource = RCC->PLLCFGR_Bits.PLLSRC;
+        pllConfig->pllM = RCC->PLLCFGR_Bits.PLLM;
+        pllConfig->pllN = RCC->PLLCFGR_Bits.PLLN;
+        pllConfig->pllP = RCC->PLLCFGR_Bits.PLLP;
+        pllConfig->pllQ = RCC->PLLCFGR_Bits.PLLQ;
+    }
 }
 
 void Rcc_disableUnusedSystemClk()

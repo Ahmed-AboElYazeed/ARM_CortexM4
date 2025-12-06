@@ -56,6 +56,7 @@ void Sched_start ()
     SYSTICK_start();
     while (1)
     {
+        volatile uint64_t elapsed = 0;
         if (Sched_triggerred == 1)
         {
             Sched_triggerred = 0;
@@ -65,13 +66,18 @@ void Sched_start ()
                 {
                     if (savedRunnable[idx]->func != NULL)
                     {
-                        if (tickCount % savedRunnable[idx]->priodicity_ticks == 0)
+                        if (tickCount >= savedRunnable[idx]->first_delay)
                         {
-                            savedRunnable[idx]->func(savedRunnable[idx]->arg);
-                        }
-                        else
-                        {
-                            // not your time to execute
+                            elapsed = tickCount - savedRunnable[idx]->first_delay;
+
+                            if ((elapsed % savedRunnable[idx]->priodicity_ticks) == 0)
+                            {
+                                savedRunnable[idx]->func(savedRunnable[idx]->arg);
+                            }
+                            else
+                            {
+                                // not your time to execute
+                            }
                         }
                     }
                     else

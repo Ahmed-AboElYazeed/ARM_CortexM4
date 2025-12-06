@@ -19,7 +19,7 @@ const LED_cfg_t LED_cfg [LED_LEN]
     },
     [LED_THIRD]=
     {
-        .active_state = LED_activeLow,
+        .active_state = LED_activeHigh,
         .port = LED_PORTA,
         .pin = 11,
         .pullType= PULL_DOWN,

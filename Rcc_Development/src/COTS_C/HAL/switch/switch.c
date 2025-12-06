@@ -58,8 +58,6 @@ uint8_t SWITCH_readState(SWITCH_names_t SWITCH_name)
 /***********************************************************************************/
 #include "Sched.h"
 
-#define NO_INPUTS 0
-
 // FOR scheduler
 PIN_state_enm_t switch_pin_state[MAX_SWITCHs] = {LOW};  // the final switch state
 PIN_state_enm_t previous_switch_state[MAX_SWITCHs] = {LOW};  //

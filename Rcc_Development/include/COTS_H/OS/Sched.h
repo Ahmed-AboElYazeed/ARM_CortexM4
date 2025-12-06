@@ -5,16 +5,16 @@
 
 // #define MAX_RUNNABLE 5      // assumed
 #define NULLPTR ((void*)0)
+#define NO_INPUTS 0
 
 typedef void (*cbf_t) (void*);
 
-// remote used priority         <<<<<<----------- NOTE
-/*
-    switch driver: readSWITCHs === 10
-*/
-typedef enum{
+// remote used priority should be added here     <<<<<<----------- NOTE
+typedef enum{   //the Runnable piriority is arranged in the same order of this enum. first->highest priority.
     SWITCH_RUNNABLE_PRIORITY,
-    LED_RUNNABLE_PRIORITY,
+    LED1_RUNNABLE_PRIORITY,
+    LED2_RUNNABLE_PRIORITY,
+    LCD_RUNNABLE_PRIORITY,
     MAX_RUNNABLE
 }Runnable_Priority_t;
 
