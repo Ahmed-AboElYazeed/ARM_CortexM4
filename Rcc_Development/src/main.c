@@ -9,6 +9,8 @@
 #include "SYSTICK/SYSTICK.h"
 #include "Sched.h"
 #include "LCD/LCD.h"
+#include "dotMatrix/dotMatrix.h"
+
 
 extern LCD_cfg_t LCD_cfg[LCD_NUMBER];
 
@@ -41,16 +43,20 @@ int main()
 {
     Rcc_init();
     Rcc_enablePeripheralClk(Rcc_GPIOA);
+    Rcc_enablePeripheralClk(Rcc_GPIOB);
+    Rcc_enablePeripheralClk(Rcc_GPIOC);
 
+    DotMat_init(DOTMAT_0);
+    DotMat_writeRow(DOTMAT_0,COL_0,ROW_0);
     __asm volatile ("CPSIE i");
-
-    LED_init();
-    LED_turnOFF(LED_THIRD);
-    LED_turnON(LED_THIRD);
+    DotMat_asynch_init();
+    // LED_init();
+    // LED_turnOFF(LED_THIRD);
+    // LED_turnON(LED_THIRD);
 
     Sched_init(1);
-    LCD_asych_init(&LCD_cfg[LCD_0]);
-    Sched_registerRunnable(&LED_Runnable);
+    // LCD_asych_init(&LCD_cfg[LCD_0]);
+    // Sched_registerRunnable(&LED_Runnable);
     Sched_start();
 
 

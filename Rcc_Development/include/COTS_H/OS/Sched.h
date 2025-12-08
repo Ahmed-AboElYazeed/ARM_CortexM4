@@ -15,6 +15,7 @@ typedef enum{   //the Runnable piriority is arranged in the same order of this e
     LED1_RUNNABLE_PRIORITY,
     LED2_RUNNABLE_PRIORITY,
     LCD_RUNNABLE_PRIORITY,
+    DOTMAT_RUNNABLE_PRIORITY,
     MAX_RUNNABLE
 }Runnable_Priority_t;
 
