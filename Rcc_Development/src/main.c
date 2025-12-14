@@ -1,34 +1,33 @@
-
-#include <stdio.h>
-#include <stdint.h>
-#include <rcc/rcc.h>
-#include <GPIO/GPIO.h>
-#include <led/led.h>
+#include "rcc/rcc.h"
+#include "GPIO/GPIO.h"
+#include "led/led.h"
 #include "switch/switch.h"
 #include "NVIC/NVIC.h"
 #include "SYSTICK/SYSTICK.h"
 #include "Sched.h"
 #include "LCD/LCD.h"
 #include "dotMatrix/dotMatrix.h"
-
-
-extern LCD_cfg_t LCD_cfg[LCD_NUMBER];
-
-void toggleLED (void * arg)
-{
-    LCD_writeString_asynch(&LCD_cfg[LCD_0],"Cee123456789123456789123456789012",0);
-}
+#include "UART/uart.h"
 
 
 
-Runnable_t LED_Runnable =
-{
-    .func= toggleLED,
-    .priority = LED1_RUNNABLE_PRIORITY,
-    .priodicity_ticks=1000,   //ms
-    .first_delay=100,
-    .arg = (void*)LED_THIRD,
-};
+// extern LCD_cfg_t LCD_cfg[LCD_NUMBER];
+
+// void toggleLED (void * arg)
+// {
+//     LCD_writeString_asynch(&LCD_cfg[LCD_0],"Cee123456789123456789123456789012",0);
+// }
+
+
+
+// Runnable_t LED_Runnable =
+// {
+//     .func= toggleLED,
+//     .priority = LED1_RUNNABLE_PRIORITY,
+//     .priodicity_ticks=1000,   //ms
+//     .first_delay=100,
+//     .arg = (void*)LED_THIRD,
+// };
 
 // Runnable_t LED_Runnable2 =
 // {
@@ -39,25 +38,72 @@ Runnable_t LED_Runnable =
 //     .arg = (void*)LED_WARNING,
 // };
 
+uint8_t str[12] = "recived cbf\n";
+Buffer_t theBuffer = {
+    .buf = str,
+    .len = 2,
+};
+void reciveComplete (void)
+{
+    USART_sendBuffer(USART1, theBuffer);
+}
+
+void transmitComplete (void)
+{
+    // theBuffer.len = 5;
+    USART_reciveBuffer(USART1, theBuffer);
+}
+
 int main()
 {
     Rcc_init();
     Rcc_enablePeripheralClk(Rcc_GPIOA);
     Rcc_enablePeripheralClk(Rcc_GPIOB);
     Rcc_enablePeripheralClk(Rcc_GPIOC);
+    LED_init();
+    USART_cfg_t USART_cfg = {
+        .baudrate = 115200,
+        .parity = 0, 
+        .cbf_Rx = reciveComplete,
+        .cbf_Tx = transmitComplete,
+    };
+    USART_init(USART1, &USART_cfg);
+    uint8_t str[20] = "stm send: starting \n";
+    Buffer_t theBuffer = {
+        .buf = str,
+        .len = 20,
+    };
+    USART_sendBuffer(USART1, theBuffer);
 
-    DotMat_init(DOTMAT_0);
-    DotMat_writeRow(DOTMAT_0,COL_0,ROW_0);
-    __asm volatile ("CPSIE i");
-    DotMat_asynch_init();
-    // LED_init();
-    // LED_turnOFF(LED_THIRD);
-    // LED_turnON(LED_THIRD);
+    while (1)
+    {
+        // USART_reciveBuffer(USART1, theBuffer);
+        for(uint32_t i=0; i<1000000000; i++)
+        {
+            asm("NOP");
+        } 
+            // USART_sendBuffer(USART1, theBuffer);
+        // int i =0;
+        // if(theBuffer.buf[i] == 'x')
+        // {
+        //     i++;
+        //     LED_toggle(LED_WARNING);
+        // }
+        // USART_sendByte(USART1, 'A');
+    }
 
-    Sched_init(1);
-    // LCD_asych_init(&LCD_cfg[LCD_0]);
-    // Sched_registerRunnable(&LED_Runnable);
-    Sched_start();
+    // DotMat_init(DOTMAT_0);
+    // DotMat_writeRow(DOTMAT_0,COL_0,ROW_0);
+    // __asm volatile ("CPSIE i");
+    // DotMat_asynch_init();
+    // // LED_init();
+    // // LED_turnOFF(LED_THIRD);
+    // // LED_turnON(LED_THIRD);
+
+    // Sched_init(1);
+    // // LCD_asych_init(&LCD_cfg[LCD_0]);
+    // // Sched_registerRunnable(&LED_Runnable);
+    // Sched_start();
 
 
     // LCD_init(&LCD_cfg[LCD_0]);
