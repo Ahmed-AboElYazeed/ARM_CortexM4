@@ -1,7 +1,7 @@
 #ifndef SCHED_H
 #define SCHED_H
 
-#include <stdint.h>
+#include "std_int.h"
 
 // #define MAX_RUNNABLE 5      // assumed
 #define NULLPTR ((void*)0)

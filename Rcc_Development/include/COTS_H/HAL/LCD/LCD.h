@@ -1,7 +1,7 @@
 #ifndef LCD_H
 #define LCD_H
 
-#include <stdint.h>
+#include "std_int.h"
 #include "LCD/LCD_interface.h"
 #include "GPIO/GPIO.h"
 

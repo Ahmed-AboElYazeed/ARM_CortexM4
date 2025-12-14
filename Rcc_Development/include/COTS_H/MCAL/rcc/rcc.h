@@ -2,7 +2,7 @@
 #define RCC_H
 
 //#include "std_bitUtillity.h"
-
+#include "std_int.h"
 
 
 // Defiene this macro to disable previous clock source after switching

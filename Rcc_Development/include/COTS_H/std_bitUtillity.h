@@ -1,7 +1,8 @@
 #ifndef STD_BITUTILITY_H
 #define STD_BITUTILITY_H    
 
-#include <stdint.h>
+#include "std_int.h"
+
 #define SET_BIT(REG,BIT)     (REG |= (1UL << BIT))
 #define CLEAR_BIT(REG,BIT)   (REG &= ~(1UL << BIT))
 #define TOGGLE_BIT(REG,BIT)  (REG ^= (1UL << BIT))

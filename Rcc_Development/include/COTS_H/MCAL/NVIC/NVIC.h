@@ -7,8 +7,13 @@
 */
 //Intera Vector Table:
 typedef enum{
-    WWDG,
-    EXTI16_PVD
+    IRQ_WWDG,
+    IRQ_EXTI16_PVD,
+
+    IRQ_USART1 = 37,
+    IRQ_USART2 = 38,
+
+    IRQ_USART6 = 71
 
 }IRQn_t;
 

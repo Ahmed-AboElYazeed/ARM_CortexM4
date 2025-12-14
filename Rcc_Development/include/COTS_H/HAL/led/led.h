@@ -1,7 +1,7 @@
 #ifndef LED_H
 #define LED_H
 
-#include <stdint.h>
+#include "std_int.h"
 #include "led/led_cfg.h"
 
 #define true  1

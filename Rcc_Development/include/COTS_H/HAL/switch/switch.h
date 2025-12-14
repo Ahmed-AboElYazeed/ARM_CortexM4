@@ -1,7 +1,7 @@
 #ifndef SWITCH_H
 #define SWITCH_H
 
-#include <stdint.h>
+#include "std_int.h"
 #include "switch/switch_cfg.h"
 
 #define true  1

@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
+#include "std_int.h"
 #include "rcc/rcc.h"
 
 #define RCC_BASE_ADDR  0x40023800UL
@@ -370,7 +368,7 @@ typedef struct
         volatile uint32_t AHB2ENR;
         RCC_AHB2ENR_Bits_t AHB2ENR_Bits;        
     };
-    uint32_t RESERVED2;
+    uint32_t RESERVED2[2];
     union{
         volatile uint32_t APB1ENR;
         RCC_APB1ENR_Bits_t APB1ENR_Bits;        
@@ -388,7 +386,7 @@ typedef struct
         volatile uint32_t AHB2LPENR;
         RCC_AHB2LPENR_Bits_t AHB2LPENR_Bits;        
     };
-    uint32_t RESERVED4;
+    uint32_t RESERVED4[2];
     union{
         volatile uint32_t APB1LPENR;
         RCC_APB1LPENR_Bits_t APB1LPENR_Bits;
@@ -630,7 +628,7 @@ void Rcc_setSystemClk(Rcc_clkSource_t clkSource)
                 break;
             default:
                 // Handle invalid current clock source
-                printf("INVALID clock sourse, enter on of these (HSI_CLK, HSE_CLK, PLL_CLK)");
+                // printf("INVALID clock sourse, enter on of these (HSI_CLK, HSE_CLK, PLL_CLK)");
                 break;
         }
         // Wait until the switch is complete
@@ -689,7 +687,7 @@ void Rcc_setSystemClk_PLL(Rcc_clkSource_t clkSource)
         4. read switch status until confirmed
         5. Disable previous clock source (optional)
     */
-    printf("CAUTION: you MUST call the \"Rcc_PllConfig\" before selecting PLL_CLK.  \n");
+    // printf("CAUTION: you MUST call the \"Rcc_PllConfig\" before selecting PLL_CLK.  \n");
     RCC->CR_Bits.PLLON= 0b1u;   //Enable PLL
     // these two lines tell the flash to that the clock speed will increase by a large amount.
     /* When you perform this step before switching to PLL, the Flash interface has enough wait cycles to handle the faster clock.

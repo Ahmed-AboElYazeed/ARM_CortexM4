@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include "std_int.h"
 #include "NVIC/NVIC.h"
 #include "NVIC/NVIC_prv.h"
 #include "std_bitUtillity.h"

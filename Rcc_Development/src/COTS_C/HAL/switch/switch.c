@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include "std_int.h"
 #include "switch/switch.h"
 #include "GPIO/GPIO.h"
 

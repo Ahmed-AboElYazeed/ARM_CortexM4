@@ -180,11 +180,13 @@ uint8_t GPIO_selectAlternateFunc(GPIO_pinCfg_t * pinConfig, GPIO_af_t altFunc)
     {
         CastedPort->AFR[0] &= ~(GPIO_AltFuncMSK_BITS << (pinConfig->pin * 4)); //clear the four bits first
         CastedPort->AFR[0] |= (altFunc & GPIO_AltFuncMSK_BITS) << (pinConfig->pin * 4); //set the alternative function bits
+        pinConfig->alternateFunction = altFunc;
     }
     else    //second 8 pins
     {
-        CastedPort->AFR[1] &= ~(GPIO_AltFuncMSK_BITS << (pinConfig->pin * 4)); //clear the four bits first
-        CastedPort->AFR[1] |= (altFunc & GPIO_AltFuncMSK_BITS) << (pinConfig->pin * 4); //set the alternative function bits
+        CastedPort->AFR[1] &= ~(GPIO_AltFuncMSK_BITS << ((pinConfig->pin-8) * 4)); //clear the four bits first
+        CastedPort->AFR[1] |= (altFunc & GPIO_AltFuncMSK_BITS) << ((pinConfig->pin-8) * 4); //set the alternative function bits
+        pinConfig->alternateFunction = altFunc;
     }
 
     return 0;

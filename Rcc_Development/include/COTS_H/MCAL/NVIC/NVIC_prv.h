@@ -1,7 +1,7 @@
 #ifndef NVIC_PRV_H
 #define NVIC_PRV_H
 
-#include <stdint.h>
+#include "std_int.h"
 
 // 0xE000E100-0xE000E4EF
 

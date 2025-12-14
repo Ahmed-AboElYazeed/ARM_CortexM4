@@ -1,7 +1,7 @@
 #ifndef SYSTICK_H
 #define SYSTICK_H
 
-#include <stdint.h>
+#include "std_int.h"
 
 void SYSTICK_Init(uint32_t prescaller);
 

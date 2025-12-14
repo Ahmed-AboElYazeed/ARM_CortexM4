@@ -1,7 +1,7 @@
 #ifndef SYSTICK_PRV_H
 #define SYSTICK_PRV_H
 
-#include <stdint.h>
+#include "std_int.h"
 
 typedef struct 
 {

@@ -1,7 +1,7 @@
 #ifndef GPIO_H
 #define GPIO_H
-#include <stdint.h>
-#include <stdio.h>
+#include "std_int.h"
+// #include <stdio.h>
 
 
 //for also compiling with g++ 
@@ -136,23 +136,60 @@ typedef enum{
 typedef enum {
     system=0,
     DIO =0,
+    GPIO =0,
+    TIM1_AF01 = 1,
+    TIM2_AF01 = 1,
+    TIM3_AF02 = 2,
+    TIM4_AF02 = 2,
+    TIM5_AF02 = 2,
+    TIM9_AF03 = 3,
+    TIM10_AF03 = 3,
+    TIM11_AF03 = 3,
+    I2C1_AF04 = 4,
+    I2C2_AF04 = 4,
+    I2C3_AF04 = 4,
+    SPI1_AF05 = 5,
+    SPI2_AF05 = 5,
+    I2S2_AF05 = 5,
+    SPI3_AF05 = 5,
+    I2S3_AF05 = 5,
+    SPI4_AF05 = 5,
+    SPI2_AF06 = 6,
+    I2S2_AF06 = 6,
+    SPI3_AF06 = 6,
+    I2S3_AF06 = 6,
+    SPI3_AF07 = 7,
+    I2S3_AF07 = 7,
+    USART1_PA9_10_PB6_7 = 7,
+    USART2_PA2_3 = 7,
+    USART6_PA11_12 = 8,
+    I2C2_AF09 = 9,
+    I2C3_AF09 = 9,
+    OTG1_FS = 10,
+    SDIO = 12,
+}GPIO_af_t;
+
+/*
+typedef enum {
+    system=0,
+    DIO =0,
     GPIO=0,
     TIM1_TIM2,
     TIM3_TIM5,
     TIM9_TIM11,
     I2C1_I2C3,
     SPI1_SPI2_SPI3,
-    SPI4_GPIOs,
+    // SPI4_GPIOs,
     USART1_USART2_USART3,
     USART4_USART5,
-    USART6_GPIOs,
+    USART6_GPIOs = 8,
     UART7_UART8,
     CAN1_CAN2,
     OTG_FS_OTG_HS,
     ETH,
     FSMC_SDIO,
     DCMI
-}GPIO_af_t;
+}GPIO_af_t;*/
 
 typedef struct {
     uint32_t pin;   // pin number

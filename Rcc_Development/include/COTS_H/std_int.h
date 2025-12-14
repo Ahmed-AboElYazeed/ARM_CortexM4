@@ -8,7 +8,10 @@ extern "C" {
 #endif
 
 // typedef __uint32_t uint32_t ;
-
+//*********************************** */
+#define NULL 0
+#define NULLPTR ((void*)0)
+//*********************************** */
 
 #ifdef ___int8_t_defined
 #ifndef _INT8_T_DECLARED
