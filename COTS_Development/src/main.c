@@ -1,0 +1,663 @@
+#include "rcc/rcc.h"
+#include "GPIO/GPIO.h"
+#include "led/led.h"
+#include "switch/switch.h"
+#include "NVIC/NVIC.h"
+#include "SYSTICK/SYSTICK.h"
+#include "Sched.h"
+#include "LCD/LCD.h"
+#include "dotMatrix/dotMatrix.h"
+#include "DMA/DMA.h"
+// #include "UART/uart.h"   //version 1.0
+// #include "Hserial/Hserial.h"
+#include "UART2/uart2.h"    //version 2.0
+#include "Hserial2/Hserial2.h"
+
+
+
+int main()
+{
+    Rcc_init();
+    // Rcc_enablePeripheralClk(Rcc_GPIOA);
+    // Rcc_enablePeripheralClk(Rcc_GPIOB);
+    // Rcc_enablePeripheralClk(Rcc_GPIOC);
+    // LED_init();
+    // USART_cfg_t USART_cfg = {
+    //     .baudrate = 115200,
+    //     .parity = 0, 
+    //     .cbf_Rx = reciveComplete,
+    //     .cbf_Tx = transmitComplete,
+    // };
+    // USART_init(USART1, &USART_cfg);
+    uint8_t str2[20] = "stm send: starting \n";
+    Buffer_t TxBuf = {
+        .buf = str2,
+        .len = 20,
+        .transmettedLen =0,
+    };
+    // USART_sendBuffer(USART1, theBuffer);
+    Hserial_init();
+    // Hserial_sendBuffer(&TxBuf);
+    uint8_t str[12] = "recived cbf\n";
+    Buffer_t RxBuf = {
+        .buf = str,
+        .len = 12,
+        .transmettedLen =0,
+    };
+    // Hserial_recieveBuffer(&RxBuf);
+
+        
+        // Rcc_disablePeripheralClk(Rcc_DMA2);
+        // Rcc_enablePeripheralClk(Rcc_DMA2);
+    // Hserial_sendBuffer(&RxBuf);
+
+    Hserial_sendBuffer(&TxBuf);
+    while (1)
+    {    
+        for(uint32_t i=0; i<10000000; i++)
+        {
+            asm("NOP");
+        } 
+        // Hserial_recieveBuffer(&RxBuf);
+        // USART_reciveBuffer(USART1, theBuffer);
+        for(uint32_t i=0; i<10000000; i++)
+        {
+            asm("NOP");
+        } 
+            // USART_sendBuffer(USART1, theBuffer);
+        // int i =0;
+        // if(theBuffer.buf[i] == 'x')
+        // {
+        //     i++;
+        //     LED_toggle(LED_WARNING);
+        // }
+        // USART_sendByte(USART1, 'A');
+    }
+
+    // DotMat_init(DOTMAT_0);
+    // DotMat_writeRow(DOTMAT_0,COL_0,ROW_0);
+    // __asm volatile ("CPSIE i");
+    // DotMat_asynch_init();
+    // // LED_init();
+    // // LED_turnOFF(LED_THIRD);
+    // // LED_turnON(LED_THIRD);
+
+    // Sched_init(1);
+    // // LCD_asych_init(&LCD_cfg[LCD_0]);
+    // // Sched_registerRunnable(&LED_Runnable);
+    // Sched_start();
+
+
+    // LCD_init(&LCD_cfg[LCD_0]);
+    // // LCD_writeChar(&LCD_cfg[LCD_0], 'z');
+    // LCD_writeString(&LCD_cfg[LCD_0], "Zee");
+    // LCD_writeString(&LCD_cfg[LCD_0], "   good 123456");
+    // //LCD_setCursorPosition(&LCD_cfg[LCD_0],40);
+    // LCD_writeString(&LCD_cfg[LCD_0], "good 123");
+
+    // LCD_saveAllCustomCharacter (&LCD_cfg[LCD_0]);
+    // LCD_writeChar(&LCD_cfg[LCD_0],0);
+    // // LCD_saveCustomCharacter (&LCD_cfg[LCD_0],1);
+    // LCD_writeChar(&LCD_cfg[LCD_0],1);
+    
+    // // while (1)
+    // {
+    //     LCD_setCursorPosition (&LCD_cfg[LCD_0], 4);
+    //     LCD_writeChar(&LCD_cfg[LCD_0],1);
+    //     SYSTICK_WaitBlocking_ms(100);    //39 microSec
+    //     LCD_setCursorPosition (&LCD_cfg[LCD_0], 4);
+    //     LCD_writeChar(&LCD_cfg[LCD_0],2);
+    //     SYSTICK_WaitBlocking_ms(100);    //39 microSec
+    // }
+    
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// void toggleLED (void * arg)
+// {
+//     if (SWITCH_readState_sch(SWITCH_FIRST) == SWITCH_PRESSED_ON)
+//     {
+//         LED_turnON((LED_names_t)arg);
+//     }
+//     else
+//     {
+//         LED_turnOFF((LED_names_t)arg);
+//     }
+// }
+
+
+
+// Runnable_t LED_Runnable =
+// {
+//     .func= toggleLED,
+//     .priority = 1,
+//     .priodicity_ticks=5,   //ms
+//     .first_delay=0,
+//     .arg = (void*)LED_THIRD,
+// };
+
+// // Runnable_t LED_Runnable2 =
+// // {
+// //     .func= toggleLED,
+// //     .priority = 2,
+// //     .priodicity_ticks=2000,   //ms
+// //     .first_delay=0,
+// //     .arg = (void*)LED_WARNING,
+// // };
+
+// int main ()
+// {
+
+
+//     Rcc_init();
+//     Rcc_enablePeripheralClk(Rcc_GPIOA);
+//     Rcc_enablePeripheralClk(Rcc_GPIOC);
+
+
+//     SWITCH_init_sch();
+//     LED_init();
+//     LED_turnOFF(LED_THIRD);
+//     LED_turnON(LED_THIRD);
+
+//     //__asm volatile ("CPSIE i");
+//     Sched_init(1);
+//     Sched_registerRunnable(&LED_Runnable);
+//     Sched_start();
+
+//     volatile int x=0;
+//     while (1)
+//     {
+//         x++;
+//     }
+
+//     return 0;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// int main (void)
+// {
+//     Rcc_enablePeripheralClk(Rcc_GPIOA);
+//     LED_init();
+
+
+//     while (1)
+//     {
+//         LED_turnON(LED_THIRD);
+//         for(int i=0; i<1000000; i++)
+//         {
+//             asm("NOP");
+//         } 
+//         LED_turnOFF(LED_THIRD);
+//         for(int i=0; i<1000000; i++)
+//         {
+//             asm("NOP");
+//         } 
+//         LED_toggle(LED_THIRD);
+//         for(int i=0; i<1000000; i++)
+//         {
+//             asm("NOP");
+//         } 
+//     }
+//     return 0;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+void toggleLED (void * arg)
+{
+    LED_toggle((LED_names_t)arg);
+}
+
+
+
+Runnable_t LED_Runnable =
+{
+    .func= toggleLED,
+    .priority = 1,
+    .priodicity_ticks=1000,   //ms
+    .first_delay=0,
+    .arg = (void*)LED_GARAG,
+};
+
+Runnable_t LED_Runnable2 =
+{
+    .func= toggleLED,
+    .priority = 2,
+    .priodicity_ticks=2000,   //ms
+    .first_delay=0,
+    .arg = (void*)LED_WARNING,
+};
+
+int main ()
+{
+
+
+    Rcc_init();
+    Rcc_enablePeripheralClk(Rcc_GPIOC);
+
+    //SWITCH_init();
+    LED_init();
+    LED_turnOFF(LED_GARAG);
+    LED_turnON(LED_GARAG);
+
+    //__asm volatile ("CPSIE i");
+    Sched_init(1);
+    Sched_registerRunnable(&LED_Runnable);
+    Sched_registerRunnable(&LED_Runnable2);
+    Sched_start();
+
+    volatile int x=0;
+    while (1)
+    {
+        x++;
+    }
+
+    return 0;
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// #define TEST 25
+
+// void SYSTICK_ISR_func (void)
+// {
+//     LED_toggle(LED_GARAG);
+// }
+
+// void fun ()
+// {
+//     __asm volatile ("CPSIE i");
+// }
+
+// int main (void)
+// {
+
+
+//     // NVIC_EnableIRQ(TEST);
+//     // //NVIC_SetPriority(25,(0b1110ul<<4));
+//     // //volatile int readPending =0;
+
+//     Rcc_init();
+//     Rcc_enablePeripheralClk(Rcc_GPIOC);
+
+//     fun();
+    
+//     // SYSTICK_Init(1);
+//     // SYSTICK_setValue(16000000);
+
+//     SWITCH_init();
+//     LED_init();
+//     LED_turnOFF(LED_GARAG);
+//     LED_turnON(LED_GARAG);
+
+//     // SYSTICK_confgCallBackFun(SYSTICK_ISR_func);
+//     // SYSTICK_start();
+
+//     volatile int x=4;
+//     while (1)
+//     {
+//         LED_toggle(LED_GARAG);
+//         SYSTICK_WaitBlocking_ms(1000);
+//     }
+//     // while(1)
+//     // {
+//     //     // if (SWITCH_readState(SWITCH_FIRST) == SWITCH_PRESSED_ON)
+//     //     // {
+//     //     //     for (volatile int i=0; i<10000; i++);
+//     //     //     LED_turnON(LED_GARAG);
+//     //     // }
+//     //     // if (SWITCH_readState(SWITCH_FIRST) == SWITCH_UNPRESSED_OFF)
+//     //     // {
+//     //     //     LED_turnOFF(LED_GARAG);
+//     //     // }
+//     //     NVIC_SetPendingIRQ(TEST);
+//     //     readPending = NVIC_GetPendingIRQ(TEST);
+//     //     if (readPending)
+//     //     {
+//     //         NVIC_ClearPendingIRQ(TEST);
+//     //         LED_toggle(LED_GARAG);
+//     //         //for (volatile int i=0; i<1000000; i++);
+//     //     }
+//     //     NVIC_SetPendingIRQ(TEST);
+        
+        
+//     // }
+//     return 0;
+// }
+
+
+
+
+
+//accedently ran one time
+    // Rcc_clkSource_t sysClkSource= HSI_CLK;
+    // pllCongfig_t pllConfig;
+    // pllConfig.pllSource= HSI_CLK;
+    // pllConfig.pllM= 10;
+    // pllConfig.pllN= 10;
+    // pllConfig.pllP= 10;
+    // pllConfig.pllQ= 10;
+    // while (1)
+    // {
+    //     printf("%d", 10);
+    //     Rcc_setSystemClk(sysClkSource);
+    //     Rcc_getSystemClk(&sysClkSource);
+    //     Rcc_PllConfig(&pllConfig);
+
+    // }
+//when 
+
+//void Rcc_PllConfig(pllCongfig_t* pllConfig)
+// {
+//     Rcc_clkSource_t currentClkSource;
+//     // Get the current system clock source
+//     Rcc_getSystemClk(&currentClkSource);
+
+//     /*
+//         OFF
+//         HSI -> PLL
+
+//         HSE -> PLL
+//     */
+//    if (HSI_CLK == pllConfig->pllSource)
+//    {
+    
+//    }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*                  codes                   */
+
+
+
+
+
+/*              testing gpio driver
+
+int main (void)
+{
+// OUTPUT PIN CONFIGURATION EXAMPLE
+    void * port= GPIOC;
+    uint32_t pin= 13;
+    uint8_t value= 1; //HIGH
+    GPIO_pinCfg_t motorPin;
+    motorPin.mode=0;
+        Rcc_enablePeripheralClk(((uint64_t)0b0001 << 32)  |  (0b1 << 2)); //GPIOC
+    GPIO_identfyPin(&motorPin,port,pin); //GPIOA/B/C/D/E , pin number 0-15
+    GPIO_setPinDirMode(&motorPin,OUTPUT);  //input, output, alternate, analog
+    //GPIO_setOutPinMode(&motorPin,PUSH_PULL,PULL_UP);   //push-pull/open-drain , pull-up/pull-down
+    //GPIO_selectAlternateFunc(&motorPin, TIM1_TIM2); 
+
+    GPIO_creatPin(&motorPin);
+
+    while (1)
+    {
+        GPIO_setPinVal(&motorPin,0);
+        GPIO_readPinVal(&motorPin, &value);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        }  
+        GPIO_setPinVal(&motorPin,1);  
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        }    
+    }
+    return 0;
+}
+
+*/
+
+
+
+
+
+/*                  testing gpio read
+
+int main()
+{
+// IN PIN CONFIGURATION EXAMPLE
+    void * port= GPIOC;
+    uint32_t pin= 14;
+    uint8_t value; //HIGH
+    GPIO_pinCfg_t sensorPin;
+    Rcc_enablePeripheralClk(Rcc_GPIOC);
+    GPIO_identfyPin(&sensorPin,port,pin); //GPIOA/B/C/D/E , pin number 0-15
+    GPIO_setPinDirMode(&sensorPin,INPUT);  //input, output, alternate, analog
+    //GPIO_setOutPinMode(&sensorPin,PUSH_PULL,PULL_DOWN);   //push-pull/open-drain , pull-up/pull-down
+    //GPIO_selectAlternateFunc(&sensorPin, TIM1);
+    
+    GPIO_creatPin(&sensorPin);
+
+    
+        GPIO_readPinVal(&sensorPin, &value);
+        GPIO_readPinVal(&sensorPin, &value);
+        GPIO_readPinVal(&sensorPin, &value);
+        GPIO_readPinVal(&sensorPin, &value);
+
+
+    while (1)
+    {
+        GPIO_readPinVal(&sensorPin, &value);
+    }
+    return 0;
+}
+*/
+
+
+
+
+
+
+/*                  testing led driver
+
+int main (void)
+{
+    Rcc_enablePeripheralClk(Rcc_GPIOC);
+    LED_init();
+
+
+    while (1)
+    {
+        LED_turnON(LED_WARNING);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
+        LED_turnOFF(LED_WARNING);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
+        LED_toggle(LED_GARAG);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
+    }
+    return 0;
+}
+
+*/
+
+
+
+/*               testing led driver
+
+int main (void)
+{
+    Rcc_enablePeripheralClk(Rcc_GPIOC);
+    LED_init();
+
+
+    while (1)
+    {
+        LED_turnON(LED_WARNING);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
+        LED_turnOFF(LED_WARNING);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
+        LED_toggle(LED_GARAG);
+        for(int i=0; i<1000000; i++)
+        {
+            asm("NOP");
+        } 
+    }
+    return 0;
+}
+
+
+*/
+
+
+/*              testing switch
+
+int main (void)
+{
+    Rcc_enablePeripheralClk(Rcc_GPIOC);
+    SWITCH_init();
+    LED_init();
+    LED_turnOFF(LED_GARAG);
+    while (1)
+    {
+        if (SWITCH_readState(SWITCH_FIRST) == SWITCH_PRESSED_ON)
+        {
+            for (volatile int i=0; i<10000; i++);
+            LED_turnON(LED_GARAG);
+        }
+        if (SWITCH_readState(SWITCH_FIRST) == SWITCH_UNPRESSED_OFF)
+        {
+            LED_turnOFF(LED_GARAG);
+        }
+        
+        
+    }
+    return 0;
+}
+
+*/
