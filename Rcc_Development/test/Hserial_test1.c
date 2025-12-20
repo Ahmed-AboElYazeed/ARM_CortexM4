@@ -11,7 +11,21 @@
 #include "DMA/DMA.h"
 #include "Hserial/Hserial.h"
 
+uint8_t str[12] = "recived cbf\n";
+Buffer_t RxBuf = {
+    .buf = str,
+    .len = 5,
+};
+// void reciveComplete (void)
+// {
+//     USART_sendBuffer(USART1, theBuffer);
+// }
 
+// void transmitComplete (void)
+// {
+//     // theBuffer.len = 5;
+//     USART_reciveBuffer(USART1, theBuffer);
+// }
 
 int main()
 {
@@ -31,34 +45,17 @@ int main()
     Buffer_t TxBuf = {
         .buf = str2,
         .len = 20,
-        .transmettedLen =0,
     };
     // USART_sendBuffer(USART1, theBuffer);
     Hserial_init();
-    // Hserial_sendBuffer(&TxBuf);
-    uint8_t str[12] = "recived cbf\n";
-    Buffer_t RxBuf = {
-        .buf = str,
-        .len = 12,
-        .transmettedLen =0,
-    };
-    // Hserial_recieveBuffer(&RxBuf);
-
-        
-        // Rcc_disablePeripheralClk(Rcc_DMA2);
-        // Rcc_enablePeripheralClk(Rcc_DMA2);
-    // Hserial_sendBuffer(&RxBuf);
-
     Hserial_sendBuffer(&TxBuf);
+    Hserial_recieveBuffer(&RxBuf);
+
+
     while (1)
-    {    
-        for(uint32_t i=0; i<10000000; i++)
-        {
-            asm("NOP");
-        } 
-        // Hserial_recieveBuffer(&RxBuf);
+    {
         // USART_reciveBuffer(USART1, theBuffer);
-        for(uint32_t i=0; i<10000000; i++)
+        for(uint32_t i=0; i<1000000000; i++)
         {
             asm("NOP");
         } 

@@ -116,7 +116,7 @@ void Rcc_ctrlClk(uint32_t clk, uint8_t state);
 void Rcc_disableUnusedSystemClk(void);
 
 void Rcc_enablePeripheralClk(uint64_t peripheral); //or should it be  (Rcc_peripheral_t peripheral)
-void Rcc_disablePeripheralClk(uint32_t peripheral);
+void Rcc_disablePeripheralClk(uint64_t peripheral);
 void Rcc_setBusPrescaler(uint32_t bus, uint32_t prescaler);
 
 void Rcc_PllConfig(pllCongfig_t* pllConfig);

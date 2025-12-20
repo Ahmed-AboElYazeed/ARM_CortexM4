@@ -80,15 +80,15 @@ USART_reg_t* const USART[] ={
 void (*cbf_Rx)(void);
 void (*cbf_Tx)(void);
 
-static Buffer_t sendBuffer;
-static Buffer_t reciveBuffer;
+Buffer_t* sendBuffer;
+Buffer_t* reciveBuffer;
 
 static void UART_Configure_BaudRate(USART_id_t USART_id, uint32_t BaudRate);
 
 
 void USART_init(USART_id_t USART_id, USART_cfg_t* cfg)
 { 
-    GPIO_pinCfg_t GPIO_USARTPin[2];     //TX -> 0,  RX -> 1
+    GPIO_pinCfg_t GPIO_USARTPin[2] = {0};     //TX -> 0,  RX -> 1
     Rcc_enablePeripheralClk(Rcc_GPIOA);
     switch (USART_id)
     {
@@ -130,6 +130,97 @@ void USART_init(USART_id_t USART_id, USART_cfg_t* cfg)
     GPIO_creatPin(&GPIO_USARTPin[0]);
     
     GPIO_setPinDirMode(&GPIO_USARTPin[1],ALTERNATE_FUNCTION);  //input, output, alternate, analog
+    GPIO_setOutPinMode(&GPIO_USARTPin[1],PUSH_PULL,PULL_DOWN);   //push-pull/open-drain , pull-up/pull-down
+    GPIO_creatPin(&GPIO_USARTPin[1]);
+
+    
+    USART[USART_id]->CR1 = 0x0000200C;  //0b10 0000 0000 1100   UE, TE, RE enabled
+    // USART[USART_id]->BRR = 0x8B; //115200 @16MHz
+    // // USART[USART_id]->BRR = 0x341; //9600 @16MHz
+    UART_Configure_BaudRate(USART_id,115200);
+
+    // update user call back functions to the global call back functions
+    if (cfg->cbf_Tx != NULLPTR)
+    {
+        cbf_Tx = cfg->cbf_Tx;
+    }
+    if (cfg->cbf_Rx != NULLPTR)
+    {
+        cbf_Rx = cfg->cbf_Rx;
+    }
+
+    // if(cfg->enable_DMA_mode == 1)
+    // {
+    //     USART[USART_id]->SR_bits.TC = 0;  //clear the TC bit to avoid an imediate interrupt
+    //     USART[USART_id]->CR1 |= (0b1u<<6);    //enable TCIE: Transmission complete interrupt enable
+    //     // USART[USART1]->CR3 |= (0b1u<<7) | (0b1u<<6);    //Bit 7 DMAT & Bit 6 DMAR
+    // }
+}
+
+void USART1_enable_DMAtransmitter ()
+{
+    USART[USART1]->SR_bits.TC = 0;  //clear the TC bit to avoid an imediate interrupt
+    USART[USART1]->CR1 |= (0b1u<<6);    //enable TCIE: Transmission complete interrupt enable
+    USART[USART1]->CR3 |= (0b1u<<7);    //Bit 7 DMAT: DMA enable transmitter
+}
+void USART1_disable_DMAtransmitter ()
+{
+    USART[USART1]->CR3 &= ~(0b1u<<7);    //Bit 7 DMAT: DMA enable transmitter
+}
+void USART1_enable_DMAreciever ()
+{
+    USART[USART1]->CR3 |= (0b1u<<6);    //Bit 6 DMAR: DMA enable receiver
+}
+void USART1_disable_DMAreciever ()
+{
+    USART[USART1]->CR3 &= ~(0b1u<<6);    //Bit 6 DMAR: DMA enable receiver
+}
+
+/*  // should i disable the USART IRQs in the DMA MODE?? 
+void USART_init_DMA(USART_id_t USART_id, USART_cfg_t* cfg)
+{ 
+    GPIO_pinCfg_t GPIO_USARTPin[2];     //TX -> 0,  RX -> 1
+    Rcc_enablePeripheralClk(Rcc_GPIOA);
+    switch (USART_id)
+    {
+        case USART1:
+            Rcc_enablePeripheralClk(Rcc_USART1);
+            // NVIC_EnableIRQ(IRQ_USART1);
+
+            GPIO_identfyPin(&GPIO_USARTPin[0],USART1_PORT,USART1_TX_PIN); //GPIOA/B/C/D/E , pin number 0-15
+            GPIO_selectAlternateFunc(&GPIO_USARTPin[0], USART1_PA9_10_PB6_7); 
+            
+            GPIO_identfyPin(&GPIO_USARTPin[1],USART1_PORT,USART1_RX_PIN); //GPIOA/B/C/D/E , pin number 0-15
+            GPIO_selectAlternateFunc(&GPIO_USARTPin[1], USART1_PA9_10_PB6_7); 
+            break;
+        case USART2:
+            Rcc_enablePeripheralClk(Rcc_USART2);
+            // NVIC_EnableIRQ(IRQ_USART2);
+            
+            GPIO_identfyPin(&GPIO_USARTPin[0],USART2_PORT,USART2_TX_PIN); //GPIOA/B/C/D/E , pin number 0-15
+            GPIO_selectAlternateFunc(&GPIO_USARTPin[0], USART2_PA2_3); 
+            
+            GPIO_identfyPin(&GPIO_USARTPin[1],USART2_PORT,USART2_RX_PIN); //GPIOA/B/C/D/E , pin number 0-15
+            GPIO_selectAlternateFunc(&GPIO_USARTPin[1], USART2_PA2_3); 
+            break;
+        case USART6:
+            Rcc_enablePeripheralClk(Rcc_USART6);
+            // NVIC_EnableIRQ(IRQ_USART6);
+            
+            GPIO_identfyPin(&GPIO_USARTPin[0],USART6_PORT,USART6_TX_PIN); //GPIOA/B/C/D/E , pin number 0-15
+            GPIO_selectAlternateFunc(&GPIO_USARTPin[0], USART6_PA11_12); 
+            
+            GPIO_identfyPin(&GPIO_USARTPin[1],USART6_PORT,USART6_RX_PIN); //GPIOA/B/C/D/E , pin number 0-15
+            GPIO_selectAlternateFunc(&GPIO_USARTPin[1], USART6_PA11_12); 
+            break;
+        default:
+            break;
+    }
+    GPIO_setPinDirMode(&GPIO_USARTPin[0],ALTERNATE_FUNCTION);  //input, output, alternate, analog
+    GPIO_setOutPinMode(&GPIO_USARTPin[0],PUSH_PULL,PULL_UP);   //push-pull/open-drain , pull-up/pull-down
+    GPIO_creatPin(&GPIO_USARTPin[0]);
+    
+    GPIO_setPinDirMode(&GPIO_USARTPin[1],ALTERNATE_FUNCTION);  //input, output, alternate, analog
     GPIO_setOutPinMode(&GPIO_USARTPin[1],PUSH_PULL,PULL_UP);   //push-pull/open-drain , pull-up/pull-down
     GPIO_creatPin(&GPIO_USARTPin[1]);
 
@@ -142,8 +233,10 @@ void USART_init(USART_id_t USART_id, USART_cfg_t* cfg)
     // update user call back functions to the global call back functions
     cbf_Tx = cfg->cbf_Tx;
     cbf_Rx = cfg->cbf_Rx;
-}
 
+    USART[USART_id]->CR3 |= 0b11000000u;    //DMA enable transmitter & receiver
+}
+*/
 static void UART_Configure_BaudRate(USART_id_t USART_id, uint32_t BaudRate)
 {
     uint32_t pclk;          /* Peripheral clock frequency */
@@ -153,7 +246,8 @@ static void UART_Configure_BaudRate(USART_id_t USART_id, uint32_t BaudRate)
     uint32_t brr_value;     /* Final BRR register value */
     
     /* Determine peripheral clock based on UART */
-            pclk = 16000000;    /* 16 MHz APB2 clock */
+    // pclk = 16000000;    /* 16 MHz APB2 clock */
+    Rcc_GetSysClockFrequency(&pclk);
 
     
     /* Calculate USARTDIV (multiply by 100 to preserve decimal precision) */
@@ -175,8 +269,8 @@ static void UART_Configure_BaudRate(USART_id_t USART_id, uint32_t BaudRate)
     }
     
     /* Construct BRR value: Mantissa[15:4] | Fraction[3:0] */
-    mantissa = 8;
-    fraction = 11;
+    // mantissa = 8;
+    // fraction = 11;
     brr_value = (mantissa << 4) | (fraction & 0x0F);
     
     /* Write to BRR register */
@@ -190,10 +284,11 @@ void USART1_IRQHandler()
     // Check if TXE interrupt is enabled and TXE flag is set
     if (USART[USART1]->CR1_bits.TXEIE && USART[USART1]->SR_bits.TXE)
     {
-        static uint32_t txIndex = 1;
-        if (txIndex <= sendBuffer.len)
+        static volatile uint32_t txIndex = 0;
+        if (txIndex < sendBuffer->len)
         {
-            USART[USART1]->DR = sendBuffer.buf[txIndex];
+            USART[USART1]->DR = sendBuffer->buf[txIndex];
+            sendBuffer->transmettedLen++;
             txIndex++;        
         }
         else
@@ -201,17 +296,21 @@ void USART1_IRQHandler()
             // All data sent, disable TXE interrupt
             USART[USART1]->CR1_bits.TXEIE = 0;
             txIndex = 0; // Reset index for next transmission
-            cbf_Tx();
+            if (cbf_Tx != NULLPTR)
+            {
+                cbf_Tx();
+            }
         }
     }
 
     // Check if RXNE interrupt is enabled and RXNE flag is set
     if (USART[USART1]->CR1_bits.RXNEIE && USART[USART1]->SR_bits.RXNE)
     {
-        static uint32_t rxIndex = 0;
-        if (rxIndex <= reciveBuffer.len)
+        static volatile uint32_t rxIndex = 0;
+        if (rxIndex < reciveBuffer->len)
         {
-            reciveBuffer.buf[rxIndex] = (uint8_t)(USART[USART1]->DR & 0xFF);
+            reciveBuffer->buf[rxIndex] = (uint8_t)(USART[USART1]->DR & 0xFF);
+            reciveBuffer->transmettedLen++;
             rxIndex++;
         }
         else
@@ -219,7 +318,22 @@ void USART1_IRQHandler()
             // All data received, disable RXNE interrupt
             USART[USART1]->CR1_bits.RXNEIE = 0;
             rxIndex = 0; // Reset index for next reception
-            cbf_Rx();
+            if (cbf_Rx != NULLPTR)
+            {
+                cbf_Rx();
+            }
+        }
+    }
+    // FOR DMA_USART mode:
+    // Check if TCIE interrupt is enabled and TC flag is set
+    if (USART[USART1]->CR1_bits.TCIE && USART[USART1]->SR_bits.TC)
+    {
+        // the DMA finished transmission: 
+        USART[USART1]->CR1 &= ~(0b1u<<6);    //disable TCIE: Transmission complete interrupt enable
+        USART1_disable_DMAtransmitter();
+        if (cbf_Tx != NULLPTR)
+        {
+            cbf_Tx();   // notify Hserial:: send is finished //
         }
     }
 }
@@ -229,10 +343,11 @@ void USART2_IRQHandler()
     // Check if TXE interrupt is enabled and TXE flag is set
     if (USART[USART2]->CR1_bits.TXEIE == 1 && USART[USART2]->SR_bits.TXE == 1)
     {
-        static uint32_t txIndex = 1;    // starting from second byte
-        if (txIndex <= sendBuffer.len)
+        static uint32_t txIndex = 0;
+        if (txIndex < sendBuffer->len)
         {
-            USART[USART2]->DR = sendBuffer.buf[txIndex];
+            USART[USART2]->DR = sendBuffer->buf[txIndex];
+            sendBuffer->transmettedLen++;
             txIndex++;
         }
         else
@@ -240,16 +355,20 @@ void USART2_IRQHandler()
             // sending is finished
             USART[USART2]->CR1_bits.TXEIE = 0; //disable TXE interrupt
             txIndex=0;
-            cbf_Tx();
+            if (cbf_Tx != NULLPTR)
+            {
+                cbf_Tx();
+            }
         }
     }
     // Check if RXNE interrupt is enabled and RXNE flag is set
     if (USART[USART2]->CR1_bits.RXNEIE == 1 && USART[USART2]->SR_bits.RXNE == 1)
     {
         static uint32_t rxIndex = 0;
-        if (rxIndex <= reciveBuffer.len)
+        if (rxIndex < reciveBuffer->len)
         {
-            reciveBuffer.buf[rxIndex] = (uint8_t)(USART[USART2]->DR & 0xFF);
+            reciveBuffer->buf[rxIndex] = (uint8_t)(USART[USART2]->DR & 0xFF);
+            reciveBuffer->transmettedLen++;
             rxIndex++;
         }
         else
@@ -257,7 +376,10 @@ void USART2_IRQHandler()
             // All data received, disable RXNE interrupt
             USART[USART2]->CR1_bits.RXNEIE = 0;
             rxIndex = 0; // Reset index for next reception
-            cbf_Rx();
+            if (cbf_Rx != NULLPTR)
+            {
+                cbf_Rx();
+            }
         }
     }
 }
@@ -267,10 +389,11 @@ void USART6_IRQHandler()
     // Check if TXE interrupt is enabled and TXE flag is set
     if (USART[USART6]->CR1_bits.TXEIE == 1 && USART[USART6]->SR_bits.TXE == 1)
     {
-        static uint32_t txIndex = 1;    // starting from second byte
-        if (txIndex <= sendBuffer.len)
+        static uint32_t txIndex = 0;    
+        if (txIndex < sendBuffer->len)
         {
-            USART[USART6]->DR = sendBuffer.buf[txIndex];
+            USART[USART6]->DR = sendBuffer->buf[txIndex];
+            sendBuffer->transmettedLen++;
             txIndex++;
         }
         else
@@ -278,16 +401,20 @@ void USART6_IRQHandler()
             // sending is finished
             USART[USART6]->CR1_bits.TXEIE = 0; //disable TXE interrupt
             txIndex=0;
-            cbf_Tx();
+            if (cbf_Tx != NULLPTR)
+            {
+                cbf_Tx();
+            }
         }
     }
     // Check if RXNE interrupt is enabled and RXNE flag is set
     if (USART[USART6]->CR1_bits.RXNEIE == 1 && USART[USART6]->SR_bits.RXNE == 1)
     {
         static uint32_t rxIndex = 0;
-        if (rxIndex <= reciveBuffer.len)
+        if (rxIndex < reciveBuffer->len)
         {
-            reciveBuffer.buf[rxIndex] = (uint8_t)(USART[USART6]->DR & 0xFF);
+            reciveBuffer->buf[rxIndex] = (uint8_t)(USART[USART6]->DR & 0xFF);
+            reciveBuffer->transmettedLen++;
             rxIndex++;
         }
         else
@@ -295,27 +422,30 @@ void USART6_IRQHandler()
             // All data received, disable RXNE interrupt
             USART[USART6]->CR1_bits.RXNEIE = 0;
             rxIndex = 0; // Reset index for next reception
-            cbf_Rx();
+            if (cbf_Rx != NULLPTR)
+            {
+                cbf_Rx();
+            }
         }
     }
 }
 
-void USART_sendBuffer(USART_id_t USART_id, Buffer_t buffer)
+void USART_sendBuffer(USART_id_t USART_id, Buffer_t* buffer)
 {
-    if (buffer.buf != NULLPTR)
+    if (buffer->buf != NULLPTR && buffer->len > 0)
     {
         sendBuffer = buffer;
         USART[USART_id]->CR1_bits.TXEIE = 1; //enable TXE interrupt
-        USART[USART_id]->DR = sendBuffer.buf[0]; //start sending the first byte
+        // USART[USART_id]->DR = sendBuffer->buf[0]; //start sending the first byte
     }
     // //wait until TXE is set
     // while (USART[USART_id]->SR_bits.TXE == 0);
     // USART[USART_id]->DR = 0;
 }
 
-void USART_reciveBuffer(USART_id_t USART_id, Buffer_t buffer)
+void USART_reciveBuffer(USART_id_t USART_id, Buffer_t* buffer)
 {
-    if (buffer.buf != NULLPTR)
+    if (buffer->buf != NULLPTR && buffer->len > 0)
     {
         reciveBuffer = buffer;
         USART[USART_id]->CR1_bits.RXNEIE = 1; //enable RXNE interrupt
@@ -323,16 +453,13 @@ void USART_reciveBuffer(USART_id_t USART_id, Buffer_t buffer)
 }
 
 
-void USART_sendByte(USART_id_t USART_id, uint8_t data)
+
+
+
+uint32_t USART_addressGetter(USART_id_t USART_id)
 {
-    //wait until TXE is set
-    while (USART[USART_id]->SR_bits.TXE == 0);
-        USART[USART_id]->DR = data;
+    return (uint32_t)(&(USART[USART_id]->DR));
 }
-
-
-
-
 
 void USART_setCbf_Rx(void (*cbf)(void))
 {
@@ -364,3 +491,21 @@ void USART_setParity(USART_id_t USART_id, uint32_t parity)
             break;
     }
 }
+
+/*
+void USART_sendByte_Polling(USART_id_t USART_id, uint8_t data)
+{
+    //wait until TXE is set
+    while (USART[USART_id]->SR_bits.TXE == 0);
+        USART[USART_id]->DR = data;
+}
+
+uint8_t USART_receiveByte_Polling(USART_id_t USART_id)
+{
+    // Wait until RXNE (Receive Data Register Not Empty) flag is set
+    while (USART[USART_id]->SR_bits.RXNE == 0);
+    
+    // Read and return the received data
+    return (uint8_t)(USART[USART_id]->DR & 0xFF);
+}
+*/

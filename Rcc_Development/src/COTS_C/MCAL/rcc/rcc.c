@@ -838,6 +838,25 @@ void Rcc_enablePeripheralClk(uint64_t peripheral)   //or should it be  (Rcc_peri
     }
 }
 
+void Rcc_disablePeripheralClk(uint64_t peripheral)   //or should it be  (Rcc_peripheral_t peripheral) ???
+{
+    switch (peripheral >> 32)
+    {
+        case 0b0001:
+            RCC->AHB1ENR &= ~(uint32_t) peripheral;
+            break;
+        case 0b0010:
+            RCC->AHB2ENR &= ~(uint32_t) peripheral;
+            break;
+        case 0b0100:
+            RCC->APB1ENR &= ~(uint32_t) peripheral;
+            break;
+        case 0b1000:
+            RCC->APB2ENR &= ~(uint32_t) peripheral;
+            break;
+    }
+}
+
 
 void Rcc_GetSysClockFrequency(uint32_t *Ret_Frequency)
 {

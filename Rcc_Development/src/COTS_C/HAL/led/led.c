@@ -29,7 +29,7 @@ uint8_t LED_turnON(LED_names_t LED_name)
     else if (LED_cfg[LED_name].active_state == LED_activeLow)
     {
         GPIO_setPinVal(&GPIO_LEDPin[LED_name], LOW);
-        return LED_OFF;
+        return LED_ON;
     }
     else
     {
@@ -41,7 +41,7 @@ uint8_t LED_turnOFF(LED_names_t LED_name)
     if (LED_cfg[LED_name].active_state == LED_activeHigh)
     {
         GPIO_setPinVal(&GPIO_LEDPin[LED_name], LOW);
-        return LED_ON;
+        return LED_OFF;
     }
     else if (LED_cfg[LED_name].active_state == LED_activeLow)
     {
